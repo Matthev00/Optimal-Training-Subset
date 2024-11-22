@@ -1,0 +1,24 @@
+[project]
+name = "optimal_training_subset"
+version = "0.0.1"
+description = "Optimizing the Best Subset of Examples for Classifier Training"
+authors = [
+  { name = "MandM" },
+]
+
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    
+]
+requires-python = "~=3.12"
+
+[tool.black]
+line-length = 99
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+)/
+'''
