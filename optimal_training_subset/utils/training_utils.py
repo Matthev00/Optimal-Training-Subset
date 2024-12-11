@@ -1,26 +1,32 @@
 import torch
 from torch.utils.data import DataLoader, Subset
+import numpy as np
 
 
-def evaluate_model(
-    subset_indices: list[int],
+def evaluate_subset(
+    subset_indices: np.ndarray,
     dataloader: DataLoader,
     model: torch.nn.Module,
-    device: torch.device = torch.device("cpu"),
+    device: torch.device = torch.device("cpu")
 ) -> float:
     """
     Evaluates model accuracy on the validation dataset using a subset of training data.
 
     Args:
-        subset_indices (List[int]): Indices representing the selected training subset.
+        subset_indices (np.ndarray): Boolean numpy array representing selected indices.
         dataloader (DataLoader): Validation dataloader.
+        model (torch.nn.Module): Model to train and evaluate.
+        device (torch.device): Device to use for training and evaluation (default: CPU).
 
     Returns:
         float: Accuracy of the model on the validation dataset.
     """
     train_dataset = dataloader.dataset.dataset
-    subset = Subset(train_dataset, subset_indices)
-    train_loader = DataLoader(subset, batch_size=32, shuffle=True)
+
+    selected_indices = np.where(subset_indices)[0]
+
+    subset = Subset(train_dataset, selected_indices.tolist())
+    train_loader = DataLoader(subset, batch_size=16, shuffle=True)
 
     model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
