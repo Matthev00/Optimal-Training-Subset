@@ -2,18 +2,18 @@ from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimiz
 from optimal_training_subset.data.dataloaders import get_dataloaders
 from optimal_training_subset.utils.training_utils import evaluate_subset
 import numpy as np
-from torchvision.models import mobilenet_v3_small
+from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
 from torchvision import transforms
 
 
 if __name__ == "__main__":
-    transform=transforms.Compose([
+    transform = transforms.Compose([
         transforms.Grayscale(num_output_channels=3),
         transforms.ToTensor(),
         transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
     ])
     train_loader, val_loader, test_loader = get_dataloaders(transform=transform)
-    model = mobilenet_v3_small(pretrained=True)
+    model = mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.DEFAULT)
 
     initial_solution = np.random.choice([True, False], size=len(train_loader.dataset))
 
