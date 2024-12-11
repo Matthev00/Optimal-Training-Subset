@@ -4,7 +4,8 @@ from torchvision.models import MobileNet_V3_Small_Weights
 from torch.utils.data import DataLoader, Dataset, Subset, random_split
 import numpy as np
 from optimal_training_subset.config import DATASETS_DIR
-from typing import Optional, List
+from typing import Optional
+import os
 
 
 def get_dataloaders(
@@ -81,22 +82,24 @@ def get_dataset(
     # train_dataset.targets = train_dataset.targets.to("cuda")
     # test_dataset.targets = test_dataset.targets.to("cuda")
     # train_dataset.data = train_dataset.data.to("cuda")
-    # test_dataset.data = test_dataset.data.to("cuda")  
+    # test_dataset.data = test_dataset.data.to("cuda")
 
     return train_dataset, test_dataset
 
 
 def main():
+    num_workers = os.cpu_count()
     dataset_name = "FashionMNIST"
     train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloaders(
-        dataset_name=dataset_name
+        dataset_name=dataset_name,
+        num_workers=num_workers,
     )
 
     total_samples = len(train_dataset)
     mask = np.zeros(total_samples, dtype=bool)
-    mask[:500] = True  
+    mask[:500] = True
 
-    subset_loader = get_subset_loader(train_dataset, mask)
+    subset_loader = get_subset_loader(train_dataset, mask, num_workers=num_workers)
 
     print(f"Train dataloader: {len(train_dataloader)}")
     print(f"Validation dataloader: {len(val_dataloader)}")
