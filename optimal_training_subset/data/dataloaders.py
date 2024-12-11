@@ -14,7 +14,6 @@ def get_dataloaders(
     val_split: float = 0.2,
     seed: int = 42,
     num_workers: int = 0,
-    transform: Optional[transforms.Compose] = None,
     device: str = "cuda",
 ) -> tuple[Dataset, DataLoader, DataLoader, DataLoader]:
 
@@ -29,9 +28,9 @@ def get_dataloaders(
             ]
         )
     elif dataset_name == "CIFAR100":
-        train_dataset, test_dataset = get_dataset(dataset_name=dataset_name, transform=transform)
         weights = MobileNet_V3_Small_Weights.DEFAULT
         transform = weights.transforms()
+        train_dataset, test_dataset = get_dataset(dataset_name=dataset_name, transform=transform)
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
 
@@ -68,12 +67,12 @@ def get_subset_loader(
 
 
 def main():
-    num_workers = os.cpu_count()
-    dataset_name = "CIFAR100"
+    num_workers = 0
+    dataset_name = "FashionMNIST"
     train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloaders(
         dataset_name=dataset_name,
         num_workers=num_workers,
-        device="cpu",
+        device="cuda",
     )
 
     total_samples = len(train_dataset)
@@ -87,9 +86,8 @@ def main():
     print(f"Test dataloader: {len(test_dataloader)}")
     print(f"Subset dataloader: {len(subset_loader)}")
 
-    if dataset_name == "FashionMNIST":
-        print(subset_loader.dataset.dataset.data.device)
-        print(subset_loader.dataset.dataset.targets.device)
+    X, y = next(iter(subset_loader))
+    print(X)
 
 
 if __name__ == "__main__":
