@@ -62,24 +62,3 @@ class MuPlusLambdaStrategy(BaseEvolutionStrategy):
             self.generation += 1
 
         return self.best_solution, self.best_fitness
-
-
-if __name__ == "__main__":
-
-    def fitness_function(individual):
-        return (sum(individual),)
-
-    dataset_size = 100
-    max_generations = 50
-    patience = 10
-    initial_true_ratio = 0.05
-    mu = 10
-    lambda_ = 20
-
-    strategy = MuPlusLambdaStrategy(
-        dataset_size, fitness_function, max_generations, patience, initial_true_ratio, mu, lambda_
-    )
-    best_solution, best_fitness = strategy.run()
-
-    print("Best Solution:", best_solution)
-    print("Best Fitness:", best_fitness)
