@@ -5,8 +5,10 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import balanced_accuracy_score
 import numpy as np
-from optimal_training_subset.models.simple_cnn import SimpleCNN
-from optimal_training_subset.data.dataloaders import get_dataloaders, get_subset_loader
+from optimal_training_subset.data.dataloaders import get_subset_loader
+import mlflow
+from functools import wraps
+from typing import Optional
 
 
 def train_model(
@@ -102,13 +104,42 @@ def validate_model(
     return loss
 
 
+def mlflow_logger(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> float:
+        enable_mlflow = kwargs.get("enable_mlflow", False)
+        if not enable_mlflow:
+            return func(*args, **kwargs)
+
+        experiment_name = kwargs.get("experiment_name", "default")
+        mlflow.set_experiment(experiment_name)
+        with mlflow.start_run():
+            mlflow.log_param("D", kwargs.get("dataset_size"))
+            subset_size = np.sum(args[0])
+            mlflow.log_param("S", subset_size)
+
+            loss = func(*args, **kwargs)
+            mlflow.log_metric("loss", loss)
+            log = kwargs.get("log")
+            if log:
+                mlflow.log_metric("Generation", log["generation"])
+                mlflow.log_metric("Best Fitness", log["best_fitness"])
+            return loss
+
+    return wrapper
+
+
+@mlflow_logger
 def fitness_function(
     individual: np.ndarray,
     model: nn.Module,
     num_workers: int,
     train_dataset: Dataset,
     val_dataloader: DataLoader,
-    D: int,
+    dataset_size: int,
+    log: Optional[dict] = None,
+    enable_mlflow: bool = False,
+    experiment_name: str = "default",
 ) -> float:
     """
     Fitness function for the evolutionary strategy.
@@ -116,6 +147,6 @@ def fitness_function(
     subset_loader = get_subset_loader(train_dataset, individual, num_workers=num_workers)
     train_model(model, subset_loader)
 
-    S = len(individual)
-    loss = validate_model(model, val_dataloader, S=S, D=D)
+    subset_size = np.sum(individual)
+    loss = validate_model(model, val_dataloader, S=subset_size, D=dataset_size)
     return loss

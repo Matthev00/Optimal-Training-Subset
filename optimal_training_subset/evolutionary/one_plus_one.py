@@ -25,7 +25,8 @@ class OnePlusOneStrategy(BaseEvolutionStrategy):
         offspring = self.toolbox.clone(individual)
         self.toolbox.mutate(offspring)
         del offspring.fitness.values
-        offspring_fitness = self.toolbox.evaluate(offspring)
+        log = self._get_progress()
+        offspring_fitness = self.toolbox.evaluate(offspring, log=log)
         return offspring, offspring_fitness
 
     def _select(
@@ -68,7 +69,9 @@ if __name__ == "__main__":
         num_workers=num_workers,
         train_dataset=train_dataset,
         val_dataloader=val_dataloader,
-        D=len(train_dataset),
+        dataset_size=len(train_dataset),
+        enable_mlflow=True,
+        experiment_name="OnePlusOne",
     )
 
     dataset_size = 48000

@@ -58,6 +58,9 @@ class BaseEvolutionStrategy(ABC):
     def _initialize_with_ratio(self, true_ratio: float) -> bool:
         return np.random.rand() < true_ratio
 
+    def _get_progress(self) -> None:
+        return {"generation": self.generation + 1, "best_fitness": self.best_fitness}
+
     def _log_progress(self) -> None:
         print(f"Generation {self.generation + 1}: Best Fitness = {self.best_fitness}")
 
