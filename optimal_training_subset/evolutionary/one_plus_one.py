@@ -19,6 +19,7 @@ class OnePlusOneStrategy(BaseEvolutionStrategy):
     def _mutate_and_evaluate(self, individual: np.ndarray) -> tuple[np.ndarray, float]:
         offspring = self.toolbox.clone(individual)
         self.toolbox.mutate(offspring)
+        del offspring.fitness.values
         offspring_fitness = self.toolbox.evaluate(offspring)
         return offspring, offspring_fitness
 
