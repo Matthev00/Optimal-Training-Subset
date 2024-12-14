@@ -67,7 +67,8 @@ if __name__ == "__main__":
         model=model,
         num_workers=num_workers,
         train_dataset=train_dataset,
-        val_dataloader=val_dataloader
+        val_dataloader=val_dataloader,
+        D=len(train_dataset),
     )
 
     dataset_size = 48000

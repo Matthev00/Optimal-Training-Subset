@@ -65,7 +65,7 @@ def validate_model(
     beta: float = 0.5,
     S: int = 10,
     D: int = 1000,
-    device: torch.device = torch.device("cuda"),
+    device: torch.device = torch.device("cpu"),
 ) -> tuple[float, float]:
     """
     Validates the model on the validation dataset and computes the loss based on Balanced Accuracy.
@@ -90,6 +90,7 @@ def validate_model(
 
     with torch.inference_mode():
         for images, labels in val_loader:
+            images, labels = images.to(device), labels.to(device)
             output = model(images)
             _, predicted = torch.max(output.data, 1)
             all_labels.extend(labels.cpu().numpy())
@@ -106,7 +107,8 @@ def fitness_function(
     model: nn.Module,
     num_workers: int,
     train_dataset: Dataset,
-    val_dataloader: DataLoader
+    val_dataloader: DataLoader,
+    D: int,
 ) -> float:
     """
     Fitness function for the evolutionary strategy.
@@ -114,5 +116,6 @@ def fitness_function(
     subset_loader = get_subset_loader(train_dataset, individual, num_workers=num_workers)
     train_model(model, subset_loader)
 
-    loss = validate_model(model, val_dataloader)
+    S = len(individual)
+    loss = validate_model(model, val_dataloader, S=S, D=D)
     return loss
