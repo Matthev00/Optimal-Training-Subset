@@ -122,7 +122,7 @@ def mlflow_logger(func):
             mlflow.log_metric("loss", loss)
             log = kwargs.get("log")
             if log:
-                mlflow.log_metric("Generation", log["generation"])
+                mlflow.log_param("Generation", log["generation"])
                 mlflow.log_metric("Best Fitness", log["best_fitness"])
             return loss
 
