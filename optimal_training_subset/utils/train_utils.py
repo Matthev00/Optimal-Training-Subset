@@ -2,11 +2,12 @@ from torch import optim
 from tqdm import tqdm
 import torch.nn as nn
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import balanced_accuracy_score
 import numpy as np
 from optimal_training_subset.models.simple_cnn import SimpleCNN
 from optimal_training_subset.data.dataloaders import get_dataloaders, get_subset_loader
+
 
 def train_model(
     model: nn.Module,
@@ -100,43 +101,16 @@ def validate_model(
     return loss
 
 
-def fitness_function(individual: np.ndarray) -> float:
+def fitness_function(
+    individual: np.ndarray,
+    model: nn.Module,
+    num_workers: int,
+    train_dataset: Dataset,
+    val_dataloader: DataLoader
+) -> float:
     """
     Fitness function for the evolutionary strategy.
     """
-    model = SimpleCNN()
-    num_workers = 0
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-    dataset_name = "FashionMNIST"
-    train_dataset, _, val_dataloader, _ = get_dataloaders(
-        dataset_name=dataset_name,
-        num_workers=num_workers,
-        device=device,
-    )
-
-    subset_loader = get_subset_loader(train_dataset, individual, num_workers=num_workers)
-    train_model(model, subset_loader)
-
-    loss = validate_model(model, val_dataloader)
-    return loss
-
-
-def fitness_function(individual: np.ndarray) -> float:
-    """
-    Fitness function for the evolutionary strategy.
-    """
-    model = SimpleCNN()
-    num_workers = 0
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-    dataset_name = "FashionMNIST"
-    train_dataset, _, val_dataloader, _ = get_dataloaders(
-        dataset_name=dataset_name,
-        num_workers=num_workers,
-        device=device,
-    )
-
     subset_loader = get_subset_loader(train_dataset, individual, num_workers=num_workers)
     train_model(model, subset_loader)
 
