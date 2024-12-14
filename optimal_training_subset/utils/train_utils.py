@@ -8,7 +8,6 @@ import numpy as np
 from optimal_training_subset.data.dataloaders import get_subset_loader
 import mlflow
 from functools import wraps
-from typing import Optional
 
 
 def train_model(
@@ -34,6 +33,7 @@ def train_model(
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     model.train()
+    model.to(device)
     for epoch in tqdm(range(num_epochs)):
         for images, labels in train_loader:
             optimizer.zero_grad()
@@ -67,7 +67,7 @@ def validate_model(
     beta: float = 0.5,
     S: int = 10,
     D: int = 1000,
-    device: torch.device = torch.device("cpu"),
+    device: torch.device = torch.device("cuda"),
 ) -> tuple[float, float]:
     """
     Validates the model on the validation dataset and computes the loss based on Balanced Accuracy.
@@ -92,7 +92,7 @@ def validate_model(
 
     with torch.inference_mode():
         for images, labels in val_loader:
-            images, labels = images.to(device), labels.to(device)
+            images, labels = images.to(device), labels.to(device)  #
             output = model(images)
             _, predicted = torch.max(output.data, 1)
             all_labels.extend(labels.cpu().numpy())
@@ -108,45 +108,57 @@ def mlflow_logger(func):
     @wraps(func)
     def wrapper(*args, **kwargs) -> float:
         enable_mlflow = kwargs.get("enable_mlflow", False)
+        alghorithm_name = kwargs.get("algorithm").__class__.__name__
         if not enable_mlflow:
             return func(*args, **kwargs)
 
         experiment_name = kwargs.get("experiment_name", "default")
         mlflow.set_experiment(experiment_name)
         with mlflow.start_run():
-            mlflow.log_param("D", kwargs.get("dataset_size"))
-            subset_size = np.sum(args[0])
-            mlflow.log_param("S", subset_size)
-
+            mlflow.log_param("algorithm", alghorithm_name)
             loss = func(*args, **kwargs)
-            mlflow.log_metric("loss", loss)
-            log = kwargs.get("log")
-            if log:
-                mlflow.log_param("Generation", log["generation"])
-                mlflow.log_metric("Best Fitness", log["best_fitness"])
+            mlflow.log_metric("TEST LOSS", loss)
             return loss
 
     return wrapper
 
 
-@mlflow_logger
 def fitness_function(
     individual: np.ndarray,
-    model: nn.Module,
+    model_class: nn.Module,
     num_workers: int,
     train_dataset: Dataset,
     val_dataloader: DataLoader,
     dataset_size: int,
-    log: Optional[dict] = None,
-    enable_mlflow: bool = False,
-    experiment_name: str = "default",
+    device: torch.device = torch.device("cuda"),
 ) -> float:
     """
     Fitness function for the evolutionary strategy.
     """
     subset_loader = get_subset_loader(train_dataset, individual, num_workers=num_workers)
+    model = model_class().to(device)
     train_model(model, subset_loader)
-
     subset_size = np.sum(individual)
     loss = validate_model(model, val_dataloader, S=subset_size, D=dataset_size)
     return loss
+
+
+@mlflow_logger
+def evaluate_algorithm(
+    algorithm,
+    test_dataloader: DataLoader,
+    train_dataset: Dataset,
+    dataset_size: int,
+    model_class,
+    enable_mlflow: bool = True,
+    experiment_name: str = "default",
+    device: torch.device = torch.device("cuda"),
+) -> tuple[np.ndarray, float]:
+
+    best_solution, best_fitness = algorithm.run()
+    model = model_class()
+    train_dataloader = get_subset_loader(train_dataset, best_solution)
+    train_model(model, train_dataloader, num_epochs=5, device=device)
+    S = np.sum(best_solution)
+    b_accuracy = validate_model(model, test_dataloader, S=S, D=dataset_size, device=device)
+    return b_accuracy

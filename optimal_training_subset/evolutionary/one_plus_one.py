@@ -25,8 +25,7 @@ class OnePlusOneStrategy(BaseEvolutionStrategy):
         offspring = self.toolbox.clone(individual)
         self.toolbox.mutate(offspring)
         del offspring.fitness.values
-        log = self._get_progress()
-        offspring_fitness = self.toolbox.evaluate(offspring, log=log)
+        offspring_fitness = self.toolbox.evaluate(offspring)
         return offspring, offspring_fitness
 
     def _select(
