@@ -1,0 +1,86 @@
+from typing import Callable
+from deap import tools
+from optimal_training_subset.evolutionary.base_strategy import BaseEvolutionStrategy
+
+
+class MuPlusLambdaStrategy(BaseEvolutionStrategy):
+    def __init__(
+        self,
+        dataset_size: int,
+        fitness_function: Callable,
+        max_generations: int,
+        patience: int,
+        initial_true_ratio: float,
+        mu: int,
+        lambda_: int,
+    ) -> None:
+        self.mu = mu
+        self.lambda_ = lambda_
+        super().__init__(dataset_size, fitness_function, max_generations, patience, initial_true_ratio)
+
+    def _setup_deap(self):
+        super()._setup_deap()
+        self.toolbox.register("mate", tools.cxUniform, indpb=0.5)
+        self.toolbox.register(
+            "population",
+            tools.initRepeat,
+            list,
+            self.toolbox.individual,
+            n=self.mu
+        )
+    
+    def _mutate_and_cross(self, population):
+        offspring = []
+        for _ in range(self.lambda_):
+            parent1, parent2 = tools.selRandom(population, 2)
+            child = self.toolbox.clone(parent1)
+            self.toolbox.mate(child, parent2)
+            self.toolbox.mutate(child)
+            del child.fitness.values
+            offspring.append(child)
+        return offspring
+    
+    def _evaluate(self, population):
+        for ind in population:
+            ind.fitness.values = self.toolbox.evaluate(ind)
+    
+    def _find_best(self, population):
+        self.best_solution = max(population, key=lambda ind: ind.fitness.values)
+        self.best_fitness = self.best_solution.fitness.values
+
+    def run(self):
+        population = self.toolbox.population()
+        self._evaluate(population)
+
+        self._find_best(population)
+
+        while not self._should_stop():
+            offspring = self._mutate_and_cross(population=population)
+            self._evaluate(offspring)
+            population = tools.selBest(population + offspring, self.mu)
+            self._find_best(population)
+            self._log_progress()
+            self.generation += 1
+
+        return self.best_solution, self.best_fitness
+
+
+if __name__ == "__main__":
+
+    def fitness_function(individual):
+        return (sum(individual),)
+
+    dataset_size = 100
+    max_generations = 50
+    patience = 10
+    initial_true_ratio = 0.05
+    mu = 10
+    lambda_ = 20
+
+    strategy = MuPlusLambdaStrategy(
+        dataset_size, fitness_function, max_generations, patience, initial_true_ratio, mu, lambda_
+    )
+    best_solution, best_fitness = strategy.run()
+
+    print("Best Solution:", best_solution)
+    print("Best Fitness:", best_fitness)
