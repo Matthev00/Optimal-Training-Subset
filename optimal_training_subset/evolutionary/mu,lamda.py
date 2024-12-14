@@ -1,6 +1,7 @@
 from typing import Callable
 from deap import tools
 from optimal_training_subset.evolutionary.mu_plus_lambda import MuPlusLambdaStrategy
+import numpy as np
 
 
 class MuLambdaStrategy(MuPlusLambdaStrategy):
@@ -14,9 +15,17 @@ class MuLambdaStrategy(MuPlusLambdaStrategy):
         mu: int,
         lambda_: int,
     ) -> None:
-        super().__init__(dataset_size, fitness_function, max_generations, patience, initial_true_ratio, mu, lambda_)
+        super().__init__(
+            dataset_size,
+            fitness_function,
+            max_generations,
+            patience,
+            initial_true_ratio,
+            mu,
+            lambda_,
+        )
 
-    def run(self):
+    def run(self) -> tuple[np.ndarray, float]:
         population = self.toolbox.population()
         self._evaluate(population)
 

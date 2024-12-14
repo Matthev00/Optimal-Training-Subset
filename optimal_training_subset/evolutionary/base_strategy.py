@@ -40,7 +40,7 @@ class BaseEvolutionStrategy(ABC):
 
         self._setup_deap()
 
-    def _setup_deap(self):
+    def _setup_deap(self) -> None:
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
 
@@ -58,7 +58,7 @@ class BaseEvolutionStrategy(ABC):
     def _initialize_with_ratio(self, true_ratio: float) -> bool:
         return np.random.rand() < true_ratio
 
-    def _log_progress(self):
+    def _log_progress(self) -> None:
         print(f"Generation {self.generation + 1}: Best Fitness = {self.best_fitness}")
 
     def _should_stop(self) -> bool:

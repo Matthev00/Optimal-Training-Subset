@@ -23,7 +23,9 @@ class OnePlusOneStrategy(BaseEvolutionStrategy):
         offspring_fitness = self.toolbox.evaluate(offspring)
         return offspring, offspring_fitness
 
-    def _select(self, individual: np.ndarray, offspring: np.ndarray, offspring_fitness: float):
+    def _select(
+        self, individual: np.ndarray, offspring: np.ndarray, offspring_fitness: float
+    ) -> None:
         if offspring_fitness >= self.best_fitness:
             individual[:] = offspring
             self.best_fitness = offspring_fitness

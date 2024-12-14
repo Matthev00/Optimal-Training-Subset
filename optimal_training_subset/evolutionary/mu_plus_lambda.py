@@ -1,6 +1,7 @@
 from typing import Callable
 from deap import tools
 from optimal_training_subset.evolutionary.base_strategy import BaseEvolutionStrategy
+import numpy as np
 
 
 class MuPlusLambdaStrategy(BaseEvolutionStrategy):
@@ -16,20 +17,18 @@ class MuPlusLambdaStrategy(BaseEvolutionStrategy):
     ) -> None:
         self.mu = mu
         self.lambda_ = lambda_
-        super().__init__(dataset_size, fitness_function, max_generations, patience, initial_true_ratio)
+        super().__init__(
+            dataset_size, fitness_function, max_generations, patience, initial_true_ratio
+        )
 
-    def _setup_deap(self):
+    def _setup_deap(self) -> None:
         super()._setup_deap()
         self.toolbox.register("mate", tools.cxUniform, indpb=0.5)
         self.toolbox.register(
-            "population",
-            tools.initRepeat,
-            list,
-            self.toolbox.individual,
-            n=self.mu
+            "population", tools.initRepeat, list, self.toolbox.individual, n=self.mu
         )
-    
-    def _mutate_and_cross(self, population):
+
+    def _mutate_and_cross(self, population: list[np.ndarray]) -> list[np.ndarray]:
         offspring = []
         for _ in range(self.lambda_):
             parent1, parent2 = tools.selRandom(population, 2)
@@ -39,16 +38,16 @@ class MuPlusLambdaStrategy(BaseEvolutionStrategy):
             del child.fitness.values
             offspring.append(child)
         return offspring
-    
-    def _evaluate(self, population):
+
+    def _evaluate(self, population: list[np.ndarray]) -> None:
         for ind in population:
             ind.fitness.values = self.toolbox.evaluate(ind)
-    
-    def _find_best(self, population):
+
+    def _find_best(self, population: list[np.ndarray]) -> None:
         self.best_solution = max(population, key=lambda ind: ind.fitness.values)
         self.best_fitness = self.best_solution.fitness.values
 
-    def run(self):
+    def run(self) -> tuple[np.ndarray, float]:
         population = self.toolbox.population()
         self._evaluate(population)
 
