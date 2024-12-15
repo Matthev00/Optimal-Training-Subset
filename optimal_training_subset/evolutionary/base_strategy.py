@@ -61,9 +61,11 @@ class BaseEvolutionStrategy(ABC):
     def _initialize_with_ratio(self, true_ratio: float) -> bool:
         return np.random.rand() < true_ratio
 
-    def _log_progress(self) -> None:
+    def _log_progress(self, progess, subset_size) -> None:
         if self.enable_mlflow:
-            mlflow.log_metric("fitness", self.best_fitness.item(), step=self.generation)
+            mlflow.log_metric("best fitness", self.best_fitness.item(), step=self.generation)
+            mlflow.log_metric("subset_size", subset_size, step=self.generation)
+            mlflow.log_metric("current fitness", progess, step=self.generation)
 
     def _should_stop(self) -> bool:
         return (
