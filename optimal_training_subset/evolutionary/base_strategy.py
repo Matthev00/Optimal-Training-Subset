@@ -2,6 +2,7 @@ import numpy as np
 from deap import base, creator, tools
 from typing import Callable
 from abc import ABC, abstractmethod
+import mlflow
 
 
 class BaseEvolutionStrategy(ABC):
@@ -12,6 +13,7 @@ class BaseEvolutionStrategy(ABC):
         max_generations: int,
         patience: int,
         initial_true_ratio: float,
+        enable_mlflow: bool = True,
     ) -> None:
         """
         Base class for evolutionary strategies.
@@ -37,6 +39,7 @@ class BaseEvolutionStrategy(ABC):
         self.best_fitness = None
         self.generation = 0
         self.generations_without_improvement = 0
+        self.enable_mlflow = enable_mlflow
 
         self._setup_deap()
 
@@ -59,7 +62,9 @@ class BaseEvolutionStrategy(ABC):
         return np.random.rand() < true_ratio
 
     def _log_progress(self) -> None:
-        print(f"Generation {self.generation + 1}: Best Fitness = {self.best_fitness}")
+        if self.enable_mlflow:
+            mlflow.log_metric("best fitness", self.best_fitness.item(), step=self.generation)
+            mlflow.log_metric("subset_size", np.sum(self.best_solution), step=self.generation)
 
     def _should_stop(self) -> bool:
         return (

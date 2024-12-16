@@ -2,8 +2,25 @@ from torch import optim
 from tqdm import tqdm
 import torch.nn as nn
 import torch
-from torch.utils.data import DataLoader
-from sklearn.metrics import balanced_accuracy_score
+from torch.utils.data import DataLoader, Dataset
+from sklearn.metrics import balanced_accuracy_score, confusion_matrix
+import numpy as np
+from optimal_training_subset.data.dataloaders import get_subset_loader
+import mlflow
+from functools import wraps
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(confusion_matrix, annot=True, fmt="d", cmap="Blues")
+    plt.title("Confusion Matrix")
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    heatmap_path = "reports/figures/confusion_matrix.png"
+    plt.savefig(heatmap_path)
+    plt.close()
 
 
 def train_model(
@@ -27,8 +44,10 @@ def train_model(
     """
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
     model.train()
+    model.to(device)
     for epoch in tqdm(range(num_epochs)):
         for images, labels in train_loader:
             optimizer.zero_grad()
@@ -63,7 +82,8 @@ def validate_model(
     S: int = 10,
     D: int = 1000,
     device: torch.device = torch.device("cuda"),
-) -> tuple[float, float]:
+    compute_confusion: bool = True,
+) -> tuple[float, float, None | np.ndarray]:
     """
     Validates the model on the validation dataset and computes the loss based on Balanced Accuracy.
 
@@ -79,6 +99,7 @@ def validate_model(
     Returns:
         Tuple[float, float]: Loss and Balanced Accuracy.
     """
+    device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
     model.eval()
     model.to(device)
 
@@ -87,7 +108,7 @@ def validate_model(
 
     with torch.inference_mode():
         for images, labels in val_loader:
-            images, labels = images.to(device), labels.to(device)
+            images, labels = images.to(device), labels.to(device)  #
             output = model(images)
             _, predicted = torch.max(output.data, 1)
             all_labels.extend(labels.cpu().numpy())
@@ -95,5 +116,77 @@ def validate_model(
 
     balanced_accuracy = balanced_accuracy_score(all_labels, all_predictions)
     loss = loss_fn(balanced_accuracy, alpha, beta, S, D)
+    if not compute_confusion:
+        return loss, balanced_accuracy
 
-    return loss, balanced_accuracy
+    confusion = confusion_matrix(all_labels, all_predictions)
+    return loss, balanced_accuracy, confusion
+
+
+def mlflow_logger(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> float:
+        enable_mlflow = kwargs.get("enable_mlflow", False)
+        alghorithm_name = kwargs.get("algorithm").__class__.__name__
+        if not enable_mlflow:
+            return func(*args, **kwargs)
+
+        experiment_name = kwargs.get("experiment_name", "default")
+        mlflow.set_experiment(experiment_name)
+        with mlflow.start_run():
+            mlflow.log_param("algorithm", alghorithm_name)
+            loss, b_accuracy, confusion = func(*args, **kwargs)
+            mlflow.log_metric("TEST LOSS", loss)
+            mlflow.log_metric("BALANCED ACCURACY", b_accuracy)
+            if confusion is not None:
+                create_cf_heatmap(confusion)
+                mlflow.log_artifact("reports/figures/confusion_matrix.png")
+            return loss
+
+    return wrapper
+
+
+def fitness_function(
+    individual: np.ndarray,
+    model_class: nn.Module,
+    num_workers: int,
+    train_dataset: Dataset,
+    val_dataloader: DataLoader,
+    dataset_size: int,
+    device: torch.device = torch.device("cuda"),
+) -> float:
+    """
+    Fitness function for the evolutionary strategy.
+    """
+    device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
+    subset_loader = get_subset_loader(train_dataset, individual, num_workers=num_workers)
+    model = model_class().to(device)
+    train_model(model, subset_loader)
+    subset_size = np.sum(individual)
+    loss, _ = validate_model(
+        model, val_dataloader, S=subset_size, D=dataset_size, compute_confusion=False
+    )
+    return loss
+
+
+@mlflow_logger
+def evaluate_algorithm(
+    algorithm,
+    test_dataloader: DataLoader,
+    train_dataset: Dataset,
+    dataset_size: int,
+    model_class,
+    enable_mlflow: bool = True,
+    experiment_name: str = "default",
+    device: torch.device = torch.device("cpu"),
+) -> tuple[np.ndarray, float]:
+
+    best_solution, best_fitness = algorithm.run()
+    model = model_class()
+    train_dataloader = get_subset_loader(train_dataset, best_solution)
+    train_model(model, train_dataloader, num_epochs=5, device=device)
+    S = np.sum(best_solution)
+    loss, b_accuracy, confusion = validate_model(
+        model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True
+    )
+    return loss, b_accuracy, confusion
