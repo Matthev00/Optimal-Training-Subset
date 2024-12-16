@@ -42,7 +42,7 @@ class OnePlusOneStrategy(BaseEvolutionStrategy):
         while not self._should_stop():
             offspring, offspring_fitness = self._mutate_and_evaluate(individual)
             self._select(individual, offspring, offspring_fitness)
-            self._log_progress(offspring_fitness, np.sum(offspring))
+            self._log_progress()
             self.generation += 1
 
         return self.best_solution, self.best_fitness
