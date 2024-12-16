@@ -81,7 +81,8 @@ def validate_model(
     S: int = 10,
     D: int = 1000,
     device: torch.device = torch.device("cuda"),
-) -> tuple[float, float, np.ndarray]:
+    compute_confusion: bool = True,
+) -> tuple[float, float, None | np.ndarray]:
     """
     Validates the model on the validation dataset and computes the loss based on Balanced Accuracy.
 
@@ -114,8 +115,10 @@ def validate_model(
 
     balanced_accuracy = balanced_accuracy_score(all_labels, all_predictions)
     loss = loss_fn(balanced_accuracy, alpha, beta, S, D)
-    confusion = confusion_matrix(all_labels, all_predictions)
+    if not compute_confusion:
+        return loss, balanced_accuracy
 
+    confusion = confusion_matrix(all_labels, all_predictions)
     return loss, balanced_accuracy, confusion
 
 
@@ -180,5 +183,5 @@ def evaluate_algorithm(
     train_dataloader = get_subset_loader(train_dataset, best_solution)
     train_model(model, train_dataloader, num_epochs=5, device=device)
     S = np.sum(best_solution)
-    loss, b_accuracy, confusion = validate_model(model, test_dataloader, S=S, D=dataset_size, device=device)
+    loss, b_accuracy, confusion = validate_model(model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True)
     return loss, b_accuracy, confusion
