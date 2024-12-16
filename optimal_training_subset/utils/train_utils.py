@@ -154,7 +154,7 @@ def fitness_function(
     val_dataloader: DataLoader,
     dataset_size: int,
     device: torch.device = torch.device("cuda"),
-) -> float:
+) -> tuple[float]:
     """
     Fitness function for the evolutionary strategy.
     """
@@ -166,7 +166,7 @@ def fitness_function(
     loss, _ = validate_model(
         model, val_dataloader, S=subset_size, D=dataset_size, compute_confusion=False
     )
-    return loss
+    return (loss,)
 
 
 @mlflow_logger
