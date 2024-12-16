@@ -22,6 +22,7 @@ def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
     plt.savefig(heatmap_path)
     plt.close()
 
+
 def train_model(
     model: nn.Module,
     train_loader: DataLoader,
@@ -162,7 +163,9 @@ def fitness_function(
     model = model_class().to(device)
     train_model(model, subset_loader)
     subset_size = np.sum(individual)
-    loss, _, _ = validate_model(model, val_dataloader, S=subset_size, D=dataset_size)
+    loss, _ = validate_model(
+        model, val_dataloader, S=subset_size, D=dataset_size, compute_confusion=False
+    )
     return loss
 
 
@@ -183,5 +186,7 @@ def evaluate_algorithm(
     train_dataloader = get_subset_loader(train_dataset, best_solution)
     train_model(model, train_dataloader, num_epochs=5, device=device)
     S = np.sum(best_solution)
-    loss, b_accuracy, confusion = validate_model(model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True)
+    loss, b_accuracy, confusion = validate_model(
+        model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True
+    )
     return loss, b_accuracy, confusion
