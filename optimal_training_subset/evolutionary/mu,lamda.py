@@ -34,7 +34,7 @@ class MuLambdaStrategy(MuPlusLambdaStrategy):
         while not self._should_stop():
             offspring = self._mutate_and_cross(population=population)
             self._evaluate(offspring)
-            population = tools.selBest(offspring, self.mu)
+            population = tools.selRoulette(offspring, self.mu)
             self._find_best(population)
             self._log_progress()
             self.generation += 1
