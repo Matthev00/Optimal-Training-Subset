@@ -25,20 +25,16 @@ class GPUDataset(Dataset):
         return self.data[idx], self.targets[idx]
 
 
-def get_dataset(
-    dataset_name: str = "FashionMNIST") -> tuple[Dataset, Dataset]:
+def get_dataset(dataset_name: str = "FashionMNIST") -> tuple[Dataset, Dataset]:
     if dataset_name == "FashionMNIST":
         train_dataset = datasets.FashionMNIST(root=DATASETS_DIR, train=True, download=True)
         test_dataset = datasets.FashionMNIST(root=DATASETS_DIR, train=False, download=True)
     elif dataset_name == "CIFAR10":
-        train_dataset = datasets.CIFAR10(
-            root=DATASETS_DIR, train=True, download=True
-        )
-        test_dataset = datasets.CIFAR10(
-            root=DATASETS_DIR, train=False, download=True
-        )
+        train_dataset = datasets.CIFAR10(root=DATASETS_DIR, train=True, download=True)
+        test_dataset = datasets.CIFAR10(root=DATASETS_DIR, train=False, download=True)
 
     return train_dataset, test_dataset
+
 
 def main():
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
@@ -48,7 +44,6 @@ def main():
             transforms.Normalize((0.5,), (0.5,)),
         ]
     )
-
 
     train_dataset, _ = get_dataset(dataset_name="FashionMNIST", transform=transform)
     train_dataset.data = train_dataset.data.to(device)
@@ -60,6 +55,7 @@ def main():
     print(train_dataset.data.device)
     sample = next(iter(train_dataloader))[0]
     print(sample[0].shape, sample[1].shape)
+
 
 if __name__ == "__main__":
     main()

@@ -15,14 +15,20 @@ model = CNN3Channel().to(device)
 
 train_model(model, train_dataloader, num_epochs=2)
 
-loss, balanced_accuracy = validate_model(model, val_dataloader, S=1000, D=50000, compute_confusion=False)
+loss, balanced_accuracy = validate_model(
+    model, val_dataloader, S=1000, D=50000, compute_confusion=False
+)
 print(balanced_accuracy)
 
 train_model(model, train_dataloader, num_epochs=2)
 
-loss, balanced_accuracy = validate_model(model, val_dataloader, S=1000, D=50000, compute_confusion=False)
+loss, balanced_accuracy = validate_model(
+    model, val_dataloader, S=1000, D=50000, compute_confusion=False
+)
 print(balanced_accuracy)
 train_model(model, train_dataloader, num_epochs=2)
 
-loss, balanced_accuracy = validate_model(model, val_dataloader, S=1000, D=50000, compute_confusion=False)
+loss, balanced_accuracy = validate_model(
+    model, val_dataloader, S=1000, D=50000, compute_confusion=False
+)
 print(balanced_accuracy)
