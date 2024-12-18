@@ -27,10 +27,12 @@ def get_dataloaders(
                 transforms.Normalize((0.5,), (0.5,)),
             ]
         )
-    elif dataset_name == "CIFAR100":
-        weights = MobileNet_V3_Small_Weights.DEFAULT
-        transform = weights.transforms()
-        train_dataset, test_dataset = get_dataset(dataset_name=dataset_name, transform=transform)
+    elif dataset_name == "CIFAR10":
+        transform = transforms.Compose([
+            transforms.ToTensor(),               
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) 
+        ])
+        train_dataset, test_dataset = get_dataset(dataset_name=dataset_name)
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
 
@@ -38,10 +40,9 @@ def get_dataloaders(
     train_size = len(train_dataset) - val_size
     train_dataset, val_dataset = random_split(train_dataset, [train_size, val_size])
 
-    if dataset_name == "FashionMNIST":
-        train_dataset = GPUDataset(train_dataset, transform, device)
-        val_dataset = GPUDataset(val_dataset, transform, device)
-        test_dataset = GPUDataset(test_dataset, transform, device)
+    train_dataset = GPUDataset(train_dataset, transform, device)
+    val_dataset = GPUDataset(val_dataset, transform, device)
+    test_dataset = GPUDataset(test_dataset, transform, device)
 
     train_dataloader = DataLoader(
         train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers
@@ -68,7 +69,7 @@ def get_subset_loader(
 
 def main():
     num_workers = 0
-    dataset_name = "FashionMNIST"
+    dataset_name = "CIFAR10"
     train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloaders(
         dataset_name=dataset_name,
         num_workers=num_workers,
