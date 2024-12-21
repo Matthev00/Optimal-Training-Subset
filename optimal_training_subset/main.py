@@ -1,42 +1,34 @@
 from optimal_training_subset.data.dataloaders import get_dataloaders
-from optimal_training_subset.models.simple_cnn import SimpleCNN
-from optimal_training_subset.models.mobilenet import get_mobilenet
+from optimal_training_subset.models.cnn3channel import CNN3Channel
+from optimal_training_subset.utils.train_utils import train_model, validate_model
 import torch
-from optimal_training_subset.evolutionary.one_plus_one import OnePlusOneStrategy
-from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
-from functools import partial
+import torchvision
 
 
 device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 num_workers = 0
 train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloaders(
-    dataset_name="FashionMNIST", num_workers=num_workers, device=device
+    dataset_name="CIFAR10", num_workers=num_workers, device=device
 )
 
-fitness_function = partial(
-    fitness_function,
-    model_class=SimpleCNN,
-    num_workers=num_workers,
-    train_dataset=train_dataset,
-    val_dataloader=val_dataloader,
-    dataset_size=len(train_dataset),
-)
+model = CNN3Channel().to(device)
 
-strategy = OnePlusOneStrategy(
-    dataset_size=len(train_dataset),
-    fitness_function=fitness_function,
-    max_generations=2,
-    patience=10,
-    initial_true_ratio=0.05,
-)
+train_model(model, train_dataloader, num_epochs=2)
 
-evaluate_algorithm(
-    algorithm=strategy,
-    test_dataloader=test_dataloader,
-    train_dataset=train_dataset,
-    dataset_size=len(train_dataset),
-    model_class=SimpleCNN,
-    enable_mlflow=True,
-    experiment_name="ES",
-    device=device,
+loss, balanced_accuracy = validate_model(
+    model, val_dataloader, S=1000, D=50000, compute_confusion=False
 )
+print(balanced_accuracy)
+
+train_model(model, train_dataloader, num_epochs=2)
+
+loss, balanced_accuracy = validate_model(
+    model, val_dataloader, S=1000, D=50000, compute_confusion=False
+)
+print(balanced_accuracy)
+train_model(model, train_dataloader, num_epochs=2)
+
+loss, balanced_accuracy = validate_model(
+    model, val_dataloader, S=1000, D=50000, compute_confusion=False
+)
+print(balanced_accuracy)
