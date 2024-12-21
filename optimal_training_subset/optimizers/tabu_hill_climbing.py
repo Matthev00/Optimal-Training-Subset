@@ -1,0 +1,117 @@
+from collections.abc import Callable
+import numpy as np
+import mlflow
+from collections import deque
+
+
+class TabuHillClimbingOptimizer:
+    def __init__(
+        self,
+        initial_solution: np.ndarray,
+        fitness_function: Callable,
+        neighborhood_to_check: int = 10,
+        max_iterations: int = 100,
+        dataset_size: int = 48000,
+        tabu_size: int = 50,
+        best_solution: np.ndarray = None,
+        best_fitness: float = None,
+        enable_mlflow: bool = False,
+    ):
+        """
+        Hill Climbing Algorithm with Tabu Search for dataset optimization.
+
+        Args:
+            initial_solution (np.ndarray): Initial binary vector representing the subset selection.
+            fitness_function (Callable): Function to evaluate the quality of a solution.
+            max_iterations (int): Maximum number of iterations for the optimization process.
+            tabu_size (int): Maximum size of the tabu list.
+        """
+        self.dataset_size = dataset_size
+        self.current_solution = initial_solution[:] if initial_solution else self.initialize_random_solution()
+        self.fitness_function = fitness_function
+        self.max_iterations = max_iterations
+        self.neighborhood_to_check = neighborhood_to_check
+        self.best_solution = self.current_solution if best_solution is None else best_solution
+        self.best_fitness = self.fitness_function(self.best_solution) if best_fitness is None else best_fitness
+        self.current_fitness = self.fitness_function(self.current_solution)
+        self.enable_mlflow = enable_mlflow
+        self.iteration = 0
+        self.tabu_list = deque(maxlen=tabu_size)
+
+    def initialize_random_solution(self) -> np.ndarray:
+        """
+        Initializes a random binary vector of the same length as the dataset.
+
+        Returns:
+            np.ndarray: Random binary vector.
+        """
+        return np.random.choice([True, False], size=self.dataset_size)
+
+    def _log_progress(self) -> None:
+        if self.enable_mlflow:
+            mlflow.log_metric("best fitness", self.best_fitness[0].item(), step=self.iteration)
+            mlflow.log_metric("subset_size", np.sum(self.best_solution), step=self.iteration)
+
+    def generate_single_neighbor(self) -> np.ndarray:
+        """
+        Generates a single neighbor differing by one bit from the current solution.
+
+        Returns:
+            np.ndarray: Neighboring solution.
+        """
+        i = np.random.randint(0, len(self.current_solution))
+        neighbor = self.current_solution[:]
+        neighbor[i] = not neighbor[i]
+        return neighbor
+
+    def generate_neighbors(self) -> list[np.ndarray]:
+        """
+        Generates a set of neighbors differing by one bit from the current solution.
+
+        Returns:
+            list[np.ndarray]: List of neighboring solutions.
+        """
+        neighbors = []
+        for _ in range(self.neighborhood_to_check):
+            neighbor = self.generate_single_neighbor()
+            neighbors.append(neighbor)
+        return neighbors
+
+    def run(self) -> tuple[np.ndarray, float]:
+        """
+        Executes the Hill Climbing optimization process with Tabu Search.
+
+        Returns:
+            tuple[np.ndarray, float]: Best solution and its fitness found during the optimization.
+        """
+        while self.iteration < self.max_iterations:
+            self.iteration += 1
+            neighbors = self.generate_neighbors()
+            best_neighbor = None
+            best_fitness = self.current_fitness
+
+            for neighbor in neighbors:
+                neighbor_tuple = tuple(neighbor)
+                if neighbor_tuple in self.tabu_list:
+                    continue
+
+                fitness = self.fitness_function(neighbor)
+                if fitness > best_fitness:
+                    best_neighbor = neighbor
+                    best_fitness = fitness
+
+            if best_neighbor is not None:
+                self.current_solution = best_neighbor
+                self.current_fitness = best_fitness
+
+                self.tabu_list.append(tuple(best_neighbor))
+
+                if best_fitness > self.best_fitness:
+                    self.best_solution = best_neighbor
+                    self.best_fitness = best_fitness
+            else:
+                break
+
+            self._log_progress()
+
+        return self.best_solution, self.best_fitness
