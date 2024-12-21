@@ -95,6 +95,10 @@ class HillClimbingOptimizer:
             if best_neighbor is not None:
                 self.current_solution = best_neighbor
                 self.current_fitness = best_fitness
+
+                if best_fitness > self.best_fitness:
+                    self.best_solution = best_neighbor
+                    self.best_fitness = best_fitness
             else:
                 break
             self._log_progress()
