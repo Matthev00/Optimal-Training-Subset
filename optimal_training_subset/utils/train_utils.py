@@ -48,13 +48,28 @@ def train_model(
 
     model.train()
     model.to(device)
-    for epoch in tqdm(range(num_epochs)):
-        for images, labels in train_loader:
+
+    batch_count = 0
+    num_batches = len(train_loader.dataset)
+    train_iter = iter(train_loader)
+
+    with tqdm(total=num_batches, desc="Training Progress") as pbar:
+        while batch_count < num_batches:
+            try:
+                images, labels = next(train_iter)
+            except StopIteration:
+                train_iter = iter(train_loader)
+                images, labels = next(train_iter)
+
             optimizer.zero_grad()
+            images, labels = images.to(device), labels.to(device)
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
+
+            batch_count += 1
+            pbar.update(1)
 
 
 def loss_fn(balanced_accuracy: float, alpha: float, beta: float, S: int, D: int) -> float:
