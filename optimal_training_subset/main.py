@@ -5,6 +5,7 @@ from optimal_training_subset.evolutionary.one_plus_one import OnePlusOneStrategy
 from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
 from functools import partial
 from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
+from optimal_training_subset.optimizers.tabu_hill_climbing import TabuHillClimbingOptimizer
 from optimal_training_subset.models.cnn3channel import CNN3Channel
 from optimal_training_subset.utils.train_utils import train_model, validate_model
 import torch
@@ -21,8 +22,7 @@ model = CNN3Channel().to(device)
 
 train_model(model, train_dataloader, num_epochs=2)
 
-optimizer = HillClimbingOptimizer(
-    initial_solution=strategy.best_solution,
+optimizer = TabuHillClimbingOptimizer(
     fitness_function=fitness_function,
     max_iterations=2,
     enable_mlflow=True,

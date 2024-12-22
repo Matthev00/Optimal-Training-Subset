@@ -11,6 +11,7 @@ class HillClimbingOptimizer:
         neighborhood_to_chcek: int = 10,
         max_iterations: int = 100,
         dataset_size: int = 48000,
+        percentage_true: float = 0.1,
         best_solution: np.ndarray = None,
         best_fitness: float = None,
         enable_mlflow: bool = False,
@@ -24,6 +25,7 @@ class HillClimbingOptimizer:
             max_iterations (int): Maximum number of iterations for the optimization process.
         """
         self.dataset_size = dataset_size
+        self.percentage_true = percentage_true
         self.current_solution = initial_solution[:] if initial_solution else self.initialize_random_solution()
         self.fitness_function = fitness_function
         self.max_iterations = max_iterations
@@ -36,12 +38,16 @@ class HillClimbingOptimizer:
 
     def initialize_random_solution(self) -> np.ndarray:
         """
-        Initializes a random binary vector of the same length as the dataset.
+        Initializes a random binary vector with a specified percentage of True values.
 
         Returns:
             np.ndarray: Random binary vector.
         """
-        return np.random.choice([True, False], size=self.dataset_size)
+        num_true = int(self.dataset_size * self.percentage_true)
+        num_false = self.dataset_size - num_true
+        solution = np.array([True] * num_true + [False] * num_false)
+        np.random.shuffle(solution)
+        return solution
 
     def _log_progress(self) -> None:
         if self.enable_mlflow:
