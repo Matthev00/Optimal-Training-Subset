@@ -59,7 +59,7 @@ def main():
 
     hill_climbing = HillClimbingOptimizer(
         fitness_function=ff,
-        neighborhood_to_check=100,
+        neighbourhood_to_check=100,
         max_iterations=500,
         dataset_size=len(train_dataset),
         enable_mlflow=True,
@@ -67,14 +67,15 @@ def main():
 
     tabu_hill_climbing = TabuHillClimbingOptimizer(
         fitness_function=ff,
-        neighborhood_to_check=100,
+        neighbourhood_to_check=100,
         max_iterations=500,
         dataset_size=len(train_dataset),
         enable_mlflow=True,
         tabu_size=1000,
     )
 
-    strategies = [opo, mpl, ml, hill_climbing, tabu_hill_climbing]
+    # strategies = [opo, mpl, ml, hill_climbing, tabu_hill_climbing]
+    strategies = [opo, mpl, ml, hill_climbing]
 
     for strategy in strategies:
         for _ in range(EXPERIMENT_REPETITIONS):
