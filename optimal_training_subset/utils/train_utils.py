@@ -10,6 +10,7 @@ import mlflow
 from functools import wraps
 import seaborn as sns
 import matplotlib.pyplot as plt
+from optimal_training_subset.utils.config import BATCHES
 
 
 def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
@@ -26,7 +27,7 @@ def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
 def train_model(
     model: nn.Module,
     train_loader: DataLoader,
-    target_iterations: int = 1250,
+    target_iterations: int = 2,
     learning_rate: float = 1e-3,
     device: torch.device = torch.device("cuda"),
 ) -> None:
@@ -46,6 +47,7 @@ def train_model(
     Returns:
         None
     """
+    NUM_BATCHES = BATCHES * target_iterations
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
@@ -53,16 +55,16 @@ def train_model(
     model.train()
     model.to(device)
 
-    num_batches = len(train_loader)
-    batches_per_epoch = num_batches
-    epochs_required = max(1, (target_iterations + batches_per_epoch - 1) // batches_per_epoch)
+    train_iter = iter(train_loader)
 
-    iteration_count = 0
-    for epoch in tqdm(range(epochs_required), desc="Training Progress"):
-        epoch_loss = 0.0
-        for batch_idx, (images, labels) in enumerate(train_loader):
-            if iteration_count >= target_iterations:
-                break
+    batch_count = 0
+    with tqdm(total=NUM_BATCHES, desc="Training Progress") as pbar:
+        while batch_count < NUM_BATCHES:
+            try:
+                images, labels = next(train_iter)
+            except StopIteration:
+                train_iter = iter(train_loader)
+                images, labels = next(train_iter)
 
             optimizer.zero_grad()
             outputs = model(images)
@@ -70,11 +72,8 @@ def train_model(
             loss.backward()
             optimizer.step()
 
-            epoch_loss += loss.item()
-            iteration_count += 1
-
-        print(f"Epoch [{epoch + 1}/{epochs_required}], Loss: {epoch_loss / num_batches:.4f}")
-
+            batch_count += 1
+            pbar.update(1)
 
 
 def loss_fn(balanced_accuracy: float, alpha: float, beta: float, S: int, D: int) -> float:

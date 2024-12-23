@@ -20,7 +20,7 @@ train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloade
 
 model = CNN3Channel().to(device)
 
-train_model(model, train_dataloader, target_iterations=1000)
+train_model(model, train_dataloader, target_iterations=2)
 
 fitness_function = partial(
     fitness_function,
