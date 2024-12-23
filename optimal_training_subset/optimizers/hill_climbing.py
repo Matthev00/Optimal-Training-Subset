@@ -7,7 +7,7 @@ class HillClimbingOptimizer:
     def __init__(
         self,
         fitness_function: Callable,
-        neighborhood_to_check: int = 10,
+        neighbourhood_to_check: int = 10,
         max_iterations: int = 100,
         dataset_size: int = 48000,
         percentage_true: float = 0.1,
@@ -27,7 +27,7 @@ class HillClimbingOptimizer:
         self.fitness_function = fitness_function
         self.current_fitness = self.fitness_function(self.current_solution)
         self.max_iterations = max_iterations
-        self.neighbourhood_to_check = neighborhood_to_check
+        self.neighbourhood_to_check = neighbourhood_to_check
         self.best_solution = self.current_solution
         self.best_fitness = self.current_fitness
         self.enable_mlflow = enable_mlflow

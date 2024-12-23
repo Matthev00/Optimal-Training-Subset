@@ -14,10 +14,9 @@ PYTHON_INTERPRETER = python
 ## Install Python Dependencies
 .PHONY: requirements
 requirements:
+
 	$(PYTHON_INTERPRETER) -m pip install -U pip
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	
-
 
 
 ## Delete all compiled Python files
@@ -38,6 +37,11 @@ lint:
 format:
 	black --config pyproject.toml optimal_training_subset
 
+
+## Run experiments
+.PHONY: run_FM_experiment
+run_FM_experiment:
+	$(PYTHON_INTERPRETER) optimal_training_subset/experiments/FM_experiment.py
 
 
 
