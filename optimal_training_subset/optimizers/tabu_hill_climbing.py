@@ -75,7 +75,7 @@ class TabuHillClimbingOptimizer:
             list[np.ndarray]: List of neighboring solutions.
         """
         neighbors = []
-        for _ in range(self.neighborhood_to_check):
+        for _ in range(self.neighbourhood_to_check):
             neighbor = self.generate_single_neighbor()
             neighbors.append(neighbor)
         return neighbors
