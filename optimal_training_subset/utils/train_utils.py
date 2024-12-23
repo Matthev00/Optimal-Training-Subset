@@ -10,6 +10,7 @@ import mlflow
 from functools import wraps
 import seaborn as sns
 import matplotlib.pyplot as plt
+from optimal_training_subset.utils.config import BATCHES
 
 
 def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
@@ -26,35 +27,53 @@ def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
 def train_model(
     model: nn.Module,
     train_loader: DataLoader,
-    num_epochs: int = 2,
+    target_iterations: int = 2,
     learning_rate: float = 1e-3,
     device: torch.device = torch.device("cuda"),
 ) -> None:
     """
-    Trains the given neural network model on the provided dataset.
+    Trains the given neural network model on the provided dataset, balancing
+    the number of epochs and iterations to ensure fair training across datasets
+    of different sizes.
 
     Args:
         model (nn.Module): The neural network model to train.
         train_loader (DataLoader): DataLoader providing the training dataset.
-        num_epochs (int, optional): Number of training epochs. Default is 2.
+        target_iterations (int, optional): Target number of training iterations.
+            Default is 1000.
         learning_rate (float, optional): Learning rate for the optimizer. Default is 1e-3.
+        device (torch.device, optional): Device for training (default is CUDA if available).
 
     Returns:
         None
     """
+    NUM_BATCHES = BATCHES * target_iterations
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
     model.train()
     model.to(device)
-    for epoch in tqdm(range(num_epochs)):
-        for images, labels in train_loader:
+
+    train_iter = iter(train_loader)
+
+    batch_count = 0
+    with tqdm(total=NUM_BATCHES, desc="Training Progress") as pbar:
+        while batch_count < NUM_BATCHES:
+            try:
+                images, labels = next(train_iter)
+            except StopIteration:
+                train_iter = iter(train_loader)
+                images, labels = next(train_iter)
+
             optimizer.zero_grad()
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
+
+            batch_count += 1
+            pbar.update(1)
 
 
 def loss_fn(balanced_accuracy: float, alpha: float, beta: float, S: int, D: int) -> float:
@@ -108,7 +127,6 @@ def validate_model(
 
     with torch.inference_mode():
         for images, labels in val_loader:
-            images, labels = images.to(device), labels.to(device)  #
             output = model(images)
             _, predicted = torch.max(output.data, 1)
             all_labels.extend(labels.cpu().numpy())
@@ -181,10 +199,10 @@ def evaluate_algorithm(
     device: torch.device = torch.device("cpu"),
 ) -> tuple[np.ndarray, float]:
 
-    best_solution, best_fitness = algorithm.run()
+    best_solution, _ = algorithm.run()
     model = model_class()
     train_dataloader = get_subset_loader(train_dataset, best_solution)
-    train_model(model, train_dataloader, num_epochs=5, device=device)
+    train_model(model, train_dataloader, device=device, target_iterations=5)
     S = np.sum(best_solution)
     loss, b_accuracy, confusion = validate_model(
         model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True
