@@ -127,7 +127,6 @@ def validate_model(
 
     with torch.inference_mode():
         for images, labels in val_loader:
-            images, labels = images.to(device), labels.to(device)  #
             output = model(images)
             _, predicted = torch.max(output.data, 1)
             all_labels.extend(labels.cpu().numpy())
@@ -200,10 +199,10 @@ def evaluate_algorithm(
     device: torch.device = torch.device("cpu"),
 ) -> tuple[np.ndarray, float]:
 
-    best_solution, best_fitness = algorithm.run()
+    best_solution, _ = algorithm.run()
     model = model_class()
     train_dataloader = get_subset_loader(train_dataset, best_solution)
-    train_model(model, train_dataloader, device=device)
+    train_model(model, train_dataloader, device=device, target_iterations=5)
     S = np.sum(best_solution)
     loss, b_accuracy, confusion = validate_model(
         model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True
