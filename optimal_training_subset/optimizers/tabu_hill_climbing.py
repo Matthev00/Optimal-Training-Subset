@@ -7,15 +7,12 @@ from collections import deque
 class TabuHillClimbingOptimizer:
     def __init__(
         self,
-        initial_solution: np.ndarray,
         fitness_function: Callable,
         neighborhood_to_check: int = 10,
         max_iterations: int = 100,
         dataset_size: int = 48000,
         percentage_true: float = 0.1,
         tabu_size: int = 50,
-        best_solution: np.ndarray = None,
-        best_fitness: float = None,
         enable_mlflow: bool = False,
     ):
         """
@@ -29,13 +26,13 @@ class TabuHillClimbingOptimizer:
         """
         self.dataset_size = dataset_size
         self.percentage_true = percentage_true
-        self.current_solution = initial_solution[:] if initial_solution else self.initialize_random_solution()
+        self.current_solution = self.initialize_random_solution()
         self.fitness_function = fitness_function
-        self.max_iterations = max_iterations
-        self.neighborhood_to_check = neighborhood_to_check
-        self.best_solution = self.current_solution if best_solution is None else best_solution
-        self.best_fitness = self.fitness_function(self.best_solution) if best_fitness is None else best_fitness
         self.current_fitness = self.fitness_function(self.current_solution)
+        self.max_iterations = max_iterations
+        self.neighbourhood_to_check = neighborhood_to_check
+        self.best_solution = self.current_solution
+        self.best_fitness = self.current_fitness
         self.enable_mlflow = enable_mlflow
         self.iteration = 0
         self.tabu_list = deque(maxlen=tabu_size)
@@ -78,7 +75,7 @@ class TabuHillClimbingOptimizer:
             list[np.ndarray]: List of neighboring solutions.
         """
         neighbors = []
-        for _ in range(self.neighborhood_to_check):
+        for _ in range(self.neighbourhood_to_check):
             neighbor = self.generate_single_neighbor()
             neighbors.append(neighbor)
         return neighbors
