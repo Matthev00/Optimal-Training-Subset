@@ -3,17 +3,20 @@ from optimal_training_subset.models.simple_cnn import SimpleCNN
 from optimal_training_subset.evolutionary.one_plus_one import OnePlusOneStrategy
 from optimal_training_subset.evolutionary.mu_plus_lambda import MuPlusLambdaStrategy
 from optimal_training_subset.evolutionary.mu_lambda import MuLambdaStrategy
+from optimal_training_subset.optimizers.tabu_hill_climbing import TabuHillClimbingOptimizer
+from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
 from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
 from optimal_training_subset.config import EXPERIMENT_REPETITIONS
 from functools import partial
 import torch
+import numpy as np
 
 
 def main():
 
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
     num_workers = 0
-    train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloaders(
+    train_dataset, _, val_dataloader, test_dataloader = get_dataloaders(
         dataset_name="FashionMNIST", num_workers=num_workers, device=device
     )
 
@@ -41,7 +44,7 @@ def main():
         patience=50,
         initial_true_ratio=0.1,
         mu=100,
-        lambda_=500,
+        lambda_=200,
     )
 
     ml = MuLambdaStrategy(
@@ -51,12 +54,27 @@ def main():
         patience=50,
         initial_true_ratio=0.1,
         mu=100,
-        lambda_=500,
+        lambda_=200,
     )
 
-    ## ADD HIKING ALG
+    hill_climbing = HillClimbingOptimizer(
+        fitness_function=ff,
+        neighborhood_to_chcek=100,
+        max_iterations=500,
+        dataset_size=len(train_dataset),
+        enable_mlflow=True,
+    )
 
-    strategies = [opo, mpl, ml]
+    tabu_hill_climbing = TabuHillClimbingOptimizer(
+        fitness_function=ff,
+        neighborhood_to_chcek=100,
+        max_iterations=500,
+        dataset_size=len(train_dataset),
+        enable_mlflow=True,
+        tabu_size=1000,
+    )
+
+    strategies = [opo, mpl, ml, hill_climbing, tabu_hill_climbing]
 
     for strategy in strategies:
         for _ in range(EXPERIMENT_REPETITIONS):

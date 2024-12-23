@@ -1,15 +1,11 @@
 from optimal_training_subset.data.dataloaders import get_dataloaders
 from optimal_training_subset.models.simple_cnn import SimpleCNN
 import torch
-from optimal_training_subset.evolutionary.one_plus_one import OnePlusOneStrategy
 from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
-from functools import partial
-from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
 from optimal_training_subset.optimizers.tabu_hill_climbing import TabuHillClimbingOptimizer
 from optimal_training_subset.models.cnn3channel import CNN3Channel
-from optimal_training_subset.utils.train_utils import train_model, validate_model
+from optimal_training_subset.utils.train_utils import train_model
 import torch
-import torchvision
 
 
 device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
@@ -33,9 +29,8 @@ evaluate_algorithm(
     test_dataloader=test_dataloader,
     train_dataset=train_dataset,
     dataset_size=len(train_dataset),
-    model_class=SimpleCNN,
+    model_class=CNN3Channel,
     enable_mlflow=True,
     experiment_name="Hill Climbing",
     device=device,
 )
-
