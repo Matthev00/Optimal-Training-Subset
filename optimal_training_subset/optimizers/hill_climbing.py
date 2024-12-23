@@ -24,8 +24,8 @@ class HillClimbingOptimizer:
         self.dataset_size = dataset_size
         self.percentage_true = percentage_true
         self.current_solution = self.initialize_random_solution()
-        self.current_fitness = self.fitness_function(self.current_solution)
         self.fitness_function = fitness_function
+        self.current_fitness = self.fitness_function(self.current_solution)
         self.max_iterations = max_iterations
         self.neighbourhood_to_check = neighborhood_to_check
         self.best_solution = self.current_solution
