@@ -26,18 +26,22 @@ def create_cf_heatmap(confusion_matrix: np.ndarray) -> None:
 def train_model(
     model: nn.Module,
     train_loader: DataLoader,
-    num_epochs: int = 2,
+    target_iterations: int = 1250,
     learning_rate: float = 1e-3,
     device: torch.device = torch.device("cuda"),
 ) -> None:
     """
-    Trains the given neural network model on the provided dataset.
+    Trains the given neural network model on the provided dataset, balancing
+    the number of epochs and iterations to ensure fair training across datasets
+    of different sizes.
 
     Args:
         model (nn.Module): The neural network model to train.
         train_loader (DataLoader): DataLoader providing the training dataset.
-        num_epochs (int, optional): Number of training epochs. Default is 2.
+        target_iterations (int, optional): Target number of training iterations.
+            Default is 1000.
         learning_rate (float, optional): Learning rate for the optimizer. Default is 1e-3.
+        device (torch.device, optional): Device for training (default is CUDA if available).
 
     Returns:
         None
@@ -49,27 +53,28 @@ def train_model(
     model.train()
     model.to(device)
 
-    batch_count = 0
-    num_batches = len(train_loader.dataset)
-    train_iter = iter(train_loader)
+    num_batches = len(train_loader)
+    batches_per_epoch = num_batches
+    epochs_required = max(1, (target_iterations + batches_per_epoch - 1) // batches_per_epoch)
 
-    with tqdm(total=num_batches, desc="Training Progress") as pbar:
-        while batch_count < num_batches:
-            try:
-                images, labels = next(train_iter)
-            except StopIteration:
-                train_iter = iter(train_loader)
-                images, labels = next(train_iter)
+    iteration_count = 0
+    for epoch in tqdm(range(epochs_required), desc="Training Progress"):
+        epoch_loss = 0.0
+        for batch_idx, (images, labels) in enumerate(train_loader):
+            if iteration_count >= target_iterations:
+                break
 
             optimizer.zero_grad()
-            images, labels = images.to(device), labels.to(device)
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
-            batch_count += 1
-            pbar.update(1)
+            epoch_loss += loss.item()
+            iteration_count += 1
+
+        print(f"Epoch [{epoch + 1}/{epochs_required}], Loss: {epoch_loss / num_batches:.4f}")
+
 
 
 def loss_fn(balanced_accuracy: float, alpha: float, beta: float, S: int, D: int) -> float:
@@ -199,7 +204,7 @@ def evaluate_algorithm(
     best_solution, best_fitness = algorithm.run()
     model = model_class()
     train_dataloader = get_subset_loader(train_dataset, best_solution)
-    train_model(model, train_dataloader, num_epochs=5, device=device)
+    train_model(model, train_dataloader, device=device)
     S = np.sum(best_solution)
     loss, b_accuracy, confusion = validate_model(
         model, test_dataloader, S=S, D=dataset_size, device=device, compute_confusion=True

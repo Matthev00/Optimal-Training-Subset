@@ -20,12 +20,24 @@ train_dataset, train_dataloader, val_dataloader, test_dataloader = get_dataloade
 
 model = CNN3Channel().to(device)
 
-train_model(model, train_dataloader, num_epochs=2)
+train_model(model, train_dataloader, target_iterations=1000)
 
-optimizer = TabuHillClimbingOptimizer(
+fitness_function = partial(
+    fitness_function,
+    model_class=CNN3Channel,
+    num_workers=num_workers,
+    train_dataset=train_dataset,
+    val_dataloader=val_dataloader,
+    dataset_size=len(train_dataset),
+    device=device,
+)
+
+optimizer = HillClimbingOptimizer(
     fitness_function=fitness_function,
     max_iterations=2,
     enable_mlflow=True,
+    dataset_size=len(train_dataset),
+    percentage_true=0.5,
 )
 
 evaluate_algorithm(
@@ -33,9 +45,8 @@ evaluate_algorithm(
     test_dataloader=test_dataloader,
     train_dataset=train_dataset,
     dataset_size=len(train_dataset),
-    model_class=SimpleCNN,
+    model_class=CNN3Channel,
     enable_mlflow=True,
     experiment_name="Hill Climbing",
     device=device,
 )
-
