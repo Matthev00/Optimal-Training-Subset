@@ -59,7 +59,7 @@ def main():
 
     hill_climbing = HillClimbingOptimizer(
         fitness_function=ff,
-        neighborhood_to_chcek=100,
+        neighborhood_to_check=100,
         max_iterations=500,
         dataset_size=len(train_dataset),
         enable_mlflow=True,
@@ -67,7 +67,7 @@ def main():
 
     tabu_hill_climbing = TabuHillClimbingOptimizer(
         fitness_function=ff,
-        neighborhood_to_chcek=100,
+        neighborhood_to_check=100,
         max_iterations=500,
         dataset_size=len(train_dataset),
         enable_mlflow=True,
