@@ -91,7 +91,7 @@ class TabuHillClimbingOptimizer:
             self.iteration += 1
             neighbors = self.generate_neighbors()
             best_neighbor = None
-            best_fitness = self.current_fitness
+            best_fitness = None
 
             for neighbor in neighbors:
                 neighbor_tuple = tuple(neighbor)
@@ -99,7 +99,7 @@ class TabuHillClimbingOptimizer:
                     continue
 
                 fitness = self.fitness_function(neighbor)
-                if fitness > best_fitness:
+                if best_fitness is None or fitness > best_fitness:
                     best_neighbor = neighbor
                     best_fitness = fitness
 
@@ -113,6 +113,7 @@ class TabuHillClimbingOptimizer:
                     self.best_solution = best_neighbor
                     self.best_fitness = best_fitness
             else:
+                self._log_progress()
                 break
 
             self._log_progress()
