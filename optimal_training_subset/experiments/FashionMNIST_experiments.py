@@ -29,56 +29,55 @@ def main():
         dataset_size=len(train_dataset),
     )
 
-    opo = OnePlusOneStrategy(
-        dataset_size=len(train_dataset),
-        fitness_function=ff,
-        max_generations=5000,
-        patience=500,
-        initial_true_ratio=0.1,
-    )
-    
-    mpl = MuPlusLambdaStrategy(
-        dataset_size=len(train_dataset),
-        fitness_function=ff,
-        max_generations=500,
-        patience=50,
-        initial_true_ratio=0.1,
-        mu=100,
-        lambda_=200,
-    )
+    # opo = OnePlusOneStrategy(
+    #     dataset_size=len(train_dataset),
+    #     fitness_function=ff,
+    #     max_generations=5000,
+    #     patience=500,
+    #     initial_true_ratio=0.1,
+    # )
 
-    ml = MuLambdaStrategy(
-        dataset_size=len(train_dataset),
-        fitness_function=ff,
-        max_generations=500,
-        patience=50,
-        initial_true_ratio=0.1,
-        mu=100,
-        lambda_=200,
-    )
+    # tabu_hill_climbing = TabuHillClimbingOptimizer(
+    #     fitness_function=ff,
+    #     neighbourhood_to_check=100,
+    #     max_iterations=500,
+    #     dataset_size=len(train_dataset),
+    #     enable_mlflow=True,
+    #     tabu_size=1000,
+    # )
 
-    hill_climbing = HillClimbingOptimizer(
-        fitness_function=ff,
-        neighbourhood_to_check=100,
-        max_iterations=500,
-        dataset_size=len(train_dataset),
-        enable_mlflow=True,
-    )
+    for _ in range(EXPERIMENT_REPETITIONS):
+        
+        mpl = MuPlusLambdaStrategy(
+            dataset_size=len(train_dataset),
+            fitness_function=ff,
+            max_generations=500,
+            patience=50,
+            initial_true_ratio=0.1,
+            mu=100,
+            lambda_=200,
+        )
 
-    tabu_hill_climbing = TabuHillClimbingOptimizer(
-        fitness_function=ff,
-        neighbourhood_to_check=100,
-        max_iterations=500,
-        dataset_size=len(train_dataset),
-        enable_mlflow=True,
-        tabu_size=1000,
-    )
+        ml = MuLambdaStrategy(
+            dataset_size=len(train_dataset),
+            fitness_function=ff,
+            max_generations=500,
+            patience=50,
+            initial_true_ratio=0.1,
+            mu=100,
+            lambda_=200,
+        )
 
-    # strategies = [opo, mpl, ml, hill_climbing, tabu_hill_climbing]
-    strategies = [opo, mpl, ml, hill_climbing]
-
-    for strategy in strategies:
-        for _ in range(EXPERIMENT_REPETITIONS):
+        hill_climbing = HillClimbingOptimizer(
+            fitness_function=ff,
+            neighbourhood_to_check=200,
+            max_iterations=500,
+            dataset_size=len(train_dataset),
+            enable_mlflow=True,
+            percentage_true=0.1,
+        )
+        strategies = [hill_climbing, mpl, ml]
+        for strategy in strategies:
             evaluate_algorithm(
                 algorithm=strategy,
                 test_dataloader=test_dataloader,
@@ -86,7 +85,7 @@ def main():
                 dataset_size=len(train_dataset),
                 model_class=SimpleCNN,
                 enable_mlflow=True,
-                experiment_name="FashionMNIST",
+                experiment_name="FashionMNISTv3",
                 device=device,
             )
 
