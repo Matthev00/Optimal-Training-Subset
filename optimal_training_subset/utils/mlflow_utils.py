@@ -80,7 +80,7 @@ def delete_invalid_runs(mlruns_dir, valid_run_ids):
 
 
 if __name__ == "__main__":
-    old_prefix = "file:///content/optimal_training_subset"
+    old_prefix = "file:///home/mostaszewski/POP/optimal_training_subset"
     current_directory = os.getcwd()
     new_prefix = f"file://{current_directory}"
     print(new_prefix)
