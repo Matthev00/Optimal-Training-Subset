@@ -100,7 +100,7 @@ class TabuHillClimbingOptimizer:
 
                 fitness = self.fitness_function(neighbor)
                 self.tabu_list.append(tuple(neighbor))
-                
+
                 if best_fitness is None or fitness > best_fitness:
                     best_neighbor = neighbor
                     best_fitness = fitness

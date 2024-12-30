@@ -30,7 +30,7 @@ def main():
     )
 
     for _ in range(EXPERIMENT_REPETITIONS):
-        
+
         mpl = MuPlusLambdaStrategy(
             dataset_size=len(train_dataset),
             fitness_function=ff,
