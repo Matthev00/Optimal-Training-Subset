@@ -63,7 +63,7 @@ class TabuHillClimbingOptimizer:
             np.ndarray: Neighboring solution.
         """
         i = np.random.randint(0, len(self.current_solution))
-        neighbor = self.current_solution[:]
+        neighbor = self.current_solution[:].copy()
         neighbor[i] = not neighbor[i]
         return neighbor
 
