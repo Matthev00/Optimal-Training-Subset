@@ -1,14 +1,16 @@
-from optimal_training_subset.data.dataloaders import get_dataloaders
-from optimal_training_subset.models.simple_cnn import SimpleCNN
-from optimal_training_subset.evolutionary.one_plus_one import OnePlusOneStrategy
-from optimal_training_subset.evolutionary.mu_plus_lambda import MuPlusLambdaStrategy
-from optimal_training_subset.evolutionary.mu_lambda import MuLambdaStrategy
-from optimal_training_subset.optimizers.tabu_hill_climbing import TabuHillClimbingOptimizer
-from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
-from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
-from optimal_training_subset.config import EXPERIMENT_REPETITIONS
 from functools import partial
+
 import torch
+
+from optimal_training_subset.config import EXPERIMENT_REPETITIONS
+from optimal_training_subset.data.dataloaders import get_dataloaders
+from optimal_training_subset.evolutionary.mu_lambda import MuLambdaStrategy
+from optimal_training_subset.evolutionary.mu_plus_lambda import MuPlusLambdaStrategy
+from optimal_training_subset.evolutionary.one_plus_one import OnePlusOneStrategy
+from optimal_training_subset.models.simple_cnn import SimpleCNN
+from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
+from optimal_training_subset.optimizers.tabu_hill_climbing import TabuHillClimbingOptimizer
+from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
 
 
 def main():

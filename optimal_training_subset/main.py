@@ -1,11 +1,15 @@
-from optimal_training_subset.data.dataloaders import get_dataloaders
-import torch
-from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitness_function
-from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
-from optimal_training_subset.models.cnn3channel import CNN3Channel
-from optimal_training_subset.utils.train_utils import train_model
 from functools import partial
 
+import torch
+
+from optimal_training_subset.data.dataloaders import get_dataloaders
+from optimal_training_subset.models.cnn3channel import CNN3Channel
+from optimal_training_subset.optimizers.hill_climbing import HillClimbingOptimizer
+from optimal_training_subset.utils.train_utils import (
+    evaluate_algorithm,
+    fitness_function,
+    train_model,
+)
 
 device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 num_workers = 0

@@ -1,8 +1,9 @@
-import torch
-from torchvision import transforms
-from torch.utils.data import DataLoader, Dataset, Subset, random_split
 import numpy as np
-from optimal_training_subset.data.datasets import get_dataset, GPUDataset
+import torch
+from torch.utils.data import DataLoader, Dataset, Subset, random_split
+from torchvision import transforms
+
+from optimal_training_subset.data.datasets import GPUDataset, get_dataset
 
 
 def get_dataloaders(
