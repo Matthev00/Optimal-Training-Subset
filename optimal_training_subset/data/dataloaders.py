@@ -1,11 +1,9 @@
-import torch
-from torchvision import transforms
-from torchvision.models import MobileNet_V3_Small_Weights
-from torch.utils.data import DataLoader, Dataset, Subset, random_split
 import numpy as np
-from typing import Optional
-import os
-from optimal_training_subset.data.datasets import get_dataset, GPUDataset
+import torch
+from torch.utils.data import DataLoader, Dataset, Subset, random_split
+from torchvision import transforms
+
+from optimal_training_subset.data.datasets import GPUDataset, get_dataset
 
 
 def get_dataloaders(

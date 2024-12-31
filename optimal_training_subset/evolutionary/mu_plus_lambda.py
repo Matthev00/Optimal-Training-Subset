@@ -1,7 +1,9 @@
 from typing import Callable
-from deap import tools
-from optimal_training_subset.evolutionary.base_strategy import BaseEvolutionStrategy
+
 import numpy as np
+from deap import tools
+
+from optimal_training_subset.evolutionary.base_strategy import BaseEvolutionStrategy
 
 
 class MuPlusLambdaStrategy(BaseEvolutionStrategy):

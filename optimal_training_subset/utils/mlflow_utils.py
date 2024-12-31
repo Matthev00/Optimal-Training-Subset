@@ -1,7 +1,7 @@
 import os
-import yaml
 import shutil
 
+import yaml
 
 MODELS_DIR = "mlruns/models"
 MLRUNS_DIR = "mlruns"

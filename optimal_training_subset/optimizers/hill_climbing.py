@@ -1,6 +1,7 @@
 from collections.abc import Callable
-import numpy as np
+
 import mlflow
+import numpy as np
 
 
 class HillClimbingOptimizer:
