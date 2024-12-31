@@ -9,7 +9,6 @@ from optimal_training_subset.utils.train_utils import evaluate_algorithm, fitnes
 from optimal_training_subset.config import EXPERIMENT_REPETITIONS
 from functools import partial
 import torch
-import numpy as np
 
 
 def main():
