@@ -1,8 +1,10 @@
-import torch
-from torchvision import datasets, transforms
-from torch.utils.data import Dataset, DataLoader
-from optimal_training_subset.config import DATASETS_DIR
 from typing import Optional
+
+import torch
+from torch.utils.data import DataLoader, Dataset
+from torchvision import datasets, transforms
+
+from optimal_training_subset.config import DATASETS_DIR
 
 
 class GPUDataset(Dataset):

@@ -1,8 +1,9 @@
+from abc import ABC, abstractmethod
+from typing import Callable
+
+import mlflow
 import numpy as np
 from deap import base, creator, tools
-from typing import Callable
-from abc import ABC, abstractmethod
-import mlflow
 
 
 class BaseEvolutionStrategy(ABC):

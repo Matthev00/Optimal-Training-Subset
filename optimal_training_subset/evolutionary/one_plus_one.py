@@ -1,5 +1,7 @@
-import numpy as np
 from typing import Callable
+
+import numpy as np
+
 from optimal_training_subset.evolutionary.base_strategy import BaseEvolutionStrategy
 
 
