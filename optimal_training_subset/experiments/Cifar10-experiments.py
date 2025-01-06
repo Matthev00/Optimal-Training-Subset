@@ -49,15 +49,7 @@ def main():
             percentage_true=0.1,
         )
 
-        opo = OnePlusOneStrategy(
-            dataset_size=len(train_dataset),
-            fitness_function=ff,
-            max_generations=5000,
-            patience=500,
-            initial_true_ratio=0.1,
-        )
-
-        strategies = [hill_climbing, mpl, opo]
+        strategies = [hill_climbing, mpl]
         for strategy in strategies:
             evaluate_algorithm(
                 algorithm=strategy,
