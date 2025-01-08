@@ -49,7 +49,9 @@ class HillClimbingOptimizer:
     def _log_progress(self) -> None:
         if self.enable_mlflow:
             mlflow.log_metric("best fitness", self.best_fitness[0].item(), step=self.iteration)
-            mlflow.log_metric("subset_size", np.sum(self.best_solution), step=self.iteration)
+            mlflow.log_metric("best_subset_size", np.sum(self.best_solution), step=self.iteration)
+            mlflow.log_metric("current fitness", self.current_fitness[0].item(), step=self.iteration)
+            mlflow.log_metric("current_subset_size", np.sum(self.current_solution), step=self.iteration)
 
     def generate_single_neighbor(self, weights) -> np.ndarray:
         """
