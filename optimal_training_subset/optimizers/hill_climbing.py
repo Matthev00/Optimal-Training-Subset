@@ -11,6 +11,7 @@ class HillClimbingOptimizer:
         max_iterations: int = 100,
         dataset_size: int = 48000,
         percentage_true: float = 0.1,
+        bits_to_change: int = 10,
         enable_mlflow: bool = False,
     ):
         """
@@ -31,6 +32,7 @@ class HillClimbingOptimizer:
         self.best_solution = self.current_solution
         self.best_fitness = self.current_fitness
         self.enable_mlflow = enable_mlflow
+        self.bits_to_change = bits_to_change
         self.iteration = 0
 
     def initialize_random_solution(self) -> np.ndarray:
@@ -55,14 +57,15 @@ class HillClimbingOptimizer:
 
     def generate_single_neighbor(self, weights) -> np.ndarray:
         """
-        Generates a single neighbor differing by one bit from the current solution.
+        Generates a single neighbor differing by self.bit_to_change bits from the current solution.
 
         Returns:
             np.ndarray: Neighboring solution.
         """
-        i = np.random.choice(len(self.current_solution), 1, replace=False, p=weights)[0]
+        bits_to_change = np.random.choice(len(self.current_solution), self.bits_to_change, replace=False, p=weights)
         neighbor = self.current_solution.copy()
-        neighbor[i] = not neighbor[i]
+        for bit in bits_to_change:
+            neighbor[bit] = not neighbor[bit]
         return neighbor
 
     def calculate_weights(self) -> np.ndarray:
