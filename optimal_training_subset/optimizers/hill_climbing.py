@@ -1,7 +1,6 @@
 from collections.abc import Callable
-
-import mlflow
 import numpy as np
+import mlflow
 
 
 class HillClimbingOptimizer:
@@ -52,17 +51,30 @@ class HillClimbingOptimizer:
             mlflow.log_metric("best fitness", self.best_fitness[0].item(), step=self.iteration)
             mlflow.log_metric("subset_size", np.sum(self.best_solution), step=self.iteration)
 
-    def generate_single_neighbor(self) -> np.ndarray:
+    def generate_single_neighbor(self, weights) -> np.ndarray:
         """
         Generates a single neighbor differing by one bit from the current solution.
 
         Returns:
             np.ndarray: Neighboring solution.
         """
-        i = np.random.randint(0, len(self.current_solution))
-        neighbor = self.current_solution[:].copy()
+        i = np.random.choice(len(self.current_solution), 1, replace=False, p=weights)[0]
+        neighbor = self.current_solution.copy()
         neighbor[i] = not neighbor[i]
         return neighbor
+
+    def calculate_weights(self) -> np.ndarray:
+        """
+        Calculates the weights for the random choice of the bit to flip.
+
+        Returns:
+            np.ndarray: Weights for the random choice.
+        """
+        weights = np.zeros_like(self.current_solution, dtype=float)
+        weights[self.current_solution == 0] = 1 / np.sum(self.current_solution == 0)
+        weights[self.current_solution == 1] = 1 / np.sum(self.current_solution == 1)
+        weights /= weights.sum()
+        return weights
 
     def generate_neighbors(self) -> list[np.ndarray]:
         """
@@ -72,8 +84,9 @@ class HillClimbingOptimizer:
             list[np.ndarray]: list of neighboring solutions.
         """
         neighbors = []
+        weights = self.calculate_weights()
         for _ in range(self.neighbourhood_to_check):
-            neighbor = self.generate_single_neighbor()
+            neighbor = self.generate_single_neighbor(weights=weights)
             neighbors.append(neighbor)
         return neighbors
 
