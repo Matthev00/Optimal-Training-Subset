@@ -78,7 +78,7 @@ def main():
             initial_true_ratio=0.1,
         )
 
-        strategies = [tabu_hill_climbing, hill_climbing, mpl, ml, opo]
+        strategies = [hill_climbing, mpl, opo]
         for strategy in strategies:
             evaluate_algorithm(
                 algorithm=strategy,
@@ -87,7 +87,7 @@ def main():
                 dataset_size=len(train_dataset),
                 model_class=SimpleCNN,
                 enable_mlflow=True,
-                experiment_name="FashionMNIST_Tabuv",
+                experiment_name="FashionMNIST_Diff_mutation",
                 device=device,
             )
 

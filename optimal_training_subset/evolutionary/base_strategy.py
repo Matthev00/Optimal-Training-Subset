@@ -57,7 +57,7 @@ class BaseEvolutionStrategy(ABC):
             n=self.dataset_size,
         )
         self.toolbox.register("evaluate", self.fitness_function)
-        self.toolbox.register("mutate", tools.mutFlipBit, indpb=1.0 / self.dataset_size)
+        self.toolbox.register("mutate", tools.mutFlipBit, indpb=100.0 / self.dataset_size)
 
     def _initialize_with_ratio(self, true_ratio: float) -> bool:
         return np.random.rand() < true_ratio
