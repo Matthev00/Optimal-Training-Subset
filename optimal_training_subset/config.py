@@ -1,1 +1,3 @@
-DATASETS_DIR = './data/raw/'
+DATASETS_DIR = "./data/raw/"
+
+EXPERIMENT_REPETITIONS = 3
