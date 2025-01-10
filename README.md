@@ -4,58 +4,65 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-Optimizing the Best Subset of Examples for Classifier Training
+The goal of the project is to identify a subset of the most representative examples from each class in an image classification problem (e.g., datasets like FashionMNIST, CIFAR-10, or CIFAR-100). The objective is to determine which images are sufficient to train a well-performing classifier that ensures optimal separation between classes.
+
+## Instalation
+1. Clone repository  
+    ` git clone https://gitlab-stud.elka.pw.edu.pl/mostasze/optimal_training_subset.git`
+2. Prepare enviroment   
+    `make_venv`
+3. Install requirements   
+    `make requirements`
+
+## Running experiments
+In order too replicate experiments run     
+    `make run_experiments`.  
+To inspect results run   
+    `mlflow ui`.
 
 ## Project Organization
 
 ```
-├── LICENSE            <- Open-source license if one is chosen
-├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
+├── Makefile           <- Makefile with convenience commands
 ├── README.md          <- The top-level README for developers using this project.
 ├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
+├── docs               <- Documents
 │
-├── models             <- Trained and serialized models, model predictions, or model summaries
+├── notebooks          <- Jupyter notebooks. Initial experiments.
 │
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
-│
-├── pyproject.toml     <- Project configuration file with package metadata for 
-│                         optimal_training_subset and configuration for tools like black
+├── pyproject.toml   
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
 │
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+├── reports          
 │   └── figures        <- Generated graphics and figures to be used in reporting
 │
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
+├── requirements.txt   <- The requirements file for reproducing the analysis environment
 │
 ├── setup.cfg          <- Configuration file for flake8
 │
 └── optimal_training_subset   <- Source code for use in this project.
     │
-    ├── __init__.py             <- Makes optimal_training_subset a Python module
+    ├── data           <- Data management and loading
     │
-    ├── config.py               <- Store useful variables and configuration
+    ├── evolutionary   <- Evolutionary strategies implementations
     │
-    ├── dataset.py              <- Scripts to download or generate data
+    ├── experiments    <- Experiment scripts
     │
-    ├── features.py             <- Code to create features for modeling
+    ├── models         <- Model definitions and architectures
     │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
+    ├── optimizers     <- Hill climbing algorithms
     │
-    └── plots.py                <- Code to create visualizations
+    ├── utils          <- Utility functions and helpers
+    │   
+    └── config.py      <- Configuration settings
+
 ```
 
 --------
 
+## Authors
+Mateusz Ostaszewski  
+Michał Sadowski
