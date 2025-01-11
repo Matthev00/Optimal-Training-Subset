@@ -43,7 +43,7 @@ class SimpleCNN(nn.Module):
         return x
 ```
 
-- **Trój kanałowy prosty model własny** dla Cifar-10
+- **Trójkanałowy prosty model własny** dla Cifar-10
 ```python
 class CNN3Channel(nn.Module):  
     
@@ -73,9 +73,13 @@ Decyzja o wyborze najprostszych modeli jest uzasadniona ich szybkością w treno
 ### Zastosowane algorytmy optymalizacyjne
 
 Przetestowaliśmy 4 różne algorytmy optymalizacyjne:
+
 - strategie ewolucyjną One Plus One
+
 - strategie ewolucyjną Mu Plus Lambda
+
 - strategie ewolucyjną Mu, Lambda
+
 - algorytm wspinaczkowy
 
 #### Parametery strategii ewolucyjnych 
@@ -93,7 +97,7 @@ Przeprowadziliśmy eksperyemnty dla zbiorów danych FashionMNIST oraz CIFAR-10.
 
 Każdy eksperyment powtórzyliśmy trzykrotnie, aby uśrednić wyniki oraz zminimalizować wpływ losowości algorytmów na potencjalne wartości skrajne.
 
-W obu przypadkach zaczęliśmy od wyznaczenia bazowej wartości metryk dla losowego osobnika który był określany w taki sam sposób jak początkowy osobnik w algorymtach optymalizacyjnych. Wartość tych metryk także została uśredniona dla kilku osobników.(https://hackmd.io/@BdTBwptLRU-buYDfi_TJnA/HyYbOCkP1x)
+W obu przypadkach zaczęliśmy od wyznaczenia bazowej wartości metryk dla losowego osobnika który był określany w taki sam sposób jak początkowy osobnik w algorymtach optymalizacyjnych. Wartość tych metryk także została uśredniona dla kilku osobników.
 
 
 ### Zmierzone metryki
@@ -106,7 +110,9 @@ W poniższej analizie TEST LOSS oznacza wynik naszej metryki z punktu [Funkcja c
 Wyniki TEST LOSS i BALANCED ACCURACY są wynikami na zbiorze testowym po wytrenowaniu modelu przez 5 epok na podzbiorze treningowym wyznaczonym przez algorytmy optymalizacyjne.
 
 Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok treningowych, które zapewniają odpowiedni balans między szybkością trenowania a wynikiem balanced accuracy. Eksperyment został przeprowadzony dla FashionMNIST oraz CIFAR-10 Ich przebieg znajduję się w notebookach:
+
 - notebooks/01-MO-FashionMnist_initial_ind_size.ipynb.
+
 - notebooks/03-MO-Cifar_initial_indyvidual.ipynb
 
 ### Analiza wyników FashionMNIST
@@ -129,13 +135,13 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 
 Z zebranych wyników możemy zauważyć, że udało nam się znaleść lepsze wyniki niż losowe oraz początkowe, ale nie jest to bardzo duża różnica. 
 
-Wyniki pomiędzy różnymi technikami optymalizacji nie różnią się między sobą w osiągnięciu ostatecznego wyniku. 
+Wyniki pomiędzy różnymi technikami optymalizacji nie różnią się znacząco między sobą w osiągnięciu ostatecznego wyniku. 
 
-Na podstawie wykresu rozmiar podzbioru możemy zauważyć, że w przypadku `algorytmu wspinaczkowego` oraz `strategii one plus one` rozmiar pozostaje stabliny. Jednak dla Mu, lambda oraz Mu plus lambda rozmiar rośnie przez co wartość funkcji celu powoli spada.
+Na podstawie wykresu rozmiar podzbioru możemy zauważyć, że w przypadku `algorytmu wspinaczkowego` oraz `strategii one plus one` rozmiar pozostaje stabliny. Jednak dla `Mu, lambda` oraz `Mu plus lambda` rozmiar rośnie przez co wartość funkcji celu powoli spada.
 
-#### Eksperymenty ze zwiększoną mutacją 
+**Eksperymenty ze zwiększonym sąsiedztwem oraz mutacją**
 
-##### Wartości metryk
+**Wartości metryk**
 
 | Metric             | TEST LOSS | BALANCED ACCURACY |
 | ------------------  | --------- | ----------------- |
@@ -165,16 +171,16 @@ Wyniki na zbiorze testowym po wytrenowaniu na podzbiorze treningowym.
 | Mu+Lambda         | 0.445              | 0.498             |
 | Wspinaczkowy      | 0.447              | 0.502             | 
 
-Z tabeli wynika że optymalizatory poprawiją wyniki względem bazowego rozwiązania, ale nie różnią się między sobą.
+Z tabeli wynika że optymalizatory poprawiją wyniki względem bazowego rozwiązania, ale nie różnią się znacząco między sobą.
 
 ![Najlepsze dopasowanie](MO/dopasowanie.png)
 
 ![Rozmiar podzbioru](MO/rozmiar.png)  
 
 
-Wykres "Figure 1: Najlepsze dopasowanie" pokazuje zmianę wartości funkcji loss na przestrzeni kolejnych kroków. Można zauważyć, że ze względu na selekcję ruletkową, Mu+Lambda zmienia wynik raz w jedną, raz w drugą stronę, ale oscyluje wokół tego samego poziomu. Algorytm wspinaczkowy rośnie przez pierwsze 100 kroków, a później się stabilizuje. Oba algorytmy osiągają lepsze wyniki niż rozwiązanie bazowe.
+Wykres "Figure 5: Najlepsze dopasowanie" pokazuje zmianę wartości funkcji loss na przestrzeni kolejnych kroków. Można zauważyć, że ze względu na selekcję ruletkową, Mu+Lambda zmienia wynik raz w jedną, raz w drugą stronę, ale oscyluje wokół tego samego poziomu. Algorytm wspinaczkowy rośnie przez pierwsze 100 kroków, a później się stabilizuje. Oba algorytmy osiągają lepsze wyniki niż rozwiązanie bazowe.
 
-W tabeli "Figure 2: Rozmiar podzbioru" możemy zauważyć, że rozmiar podzbiorów w obu algorytmach stabilnie rośnie. Z połączenia tych dwóch obserwacji możemy wysnuć wniosek, że algorytmy optymalizacyjne znajdują coraz lepszy podzbiór treningowy. Jednak funkcja celu, która karze za zbyt duży rozmiar, powoduje, że na wykresie "Najlepsze dopasowanie" wyniki się nie polepszają. Polepsza się jednak zdolność modelu wyuczonego na wyznaczonym przez algorytmy podzbiorze. Zgadza się to również z wynikami z tabeli z wynikami algorytmów.
+W tabeli "Figure 6: Rozmiar podzbioru" możemy zauważyć, że rozmiar podzbiorów w obu algorytmach stabilnie rośnie. Z połączenia tych dwóch obserwacji możemy wysnuć wniosek, że algorytmy optymalizacyjne znajdują coraz lepszy podzbiór treningowy. Jednak funkcja celu, która karze za zbyt duży rozmiar, powoduje, że na wykresie "Najlepsze dopasowanie" wyniki się nie polepszają. Polepsza się jednak zdolność modelu wyuczonego na wyznaczonym przez algorytmy podzbiorze. Zgadza się to również z wynikami z tabeli z wynikami algorytmów.
 
 ## Podsumowanie 
 
