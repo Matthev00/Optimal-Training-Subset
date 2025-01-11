@@ -105,14 +105,16 @@ W poniższej analizie TEST LOSS oznacza wynik naszej metryki z punktu [Funkcja c
 
 Wyniki TEST LOSS i BALANCED ACCURACY są wynikami na zbiorze testowym po wytrenowaniu modelu przez 5 epok na podzbiorze treningowym wyznaczonym przez algorytmy optymalizacyjne.
 
-Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok treningowych, które zapewniają odpowiedni balans między szybkością trenowania a wynikiem balanced accuracy. Eksperyment został przeprowadzony dla [FashionMNIST](../notebooks/01-MO-FashionMnist_initial_ind_size.ipynb) oraz [CIFAR-10](../notebooks/03-MO-Cifar_initial_indyvidual.ipynb).
+Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok treningowych, które zapewniają odpowiedni balans między szybkością trenowania a wynikiem balanced accuracy. Eksperyment został przeprowadzony dla FashionMNIST oraz CIFAR-10 Ich przebieg znajduję się w notebookach:
+- notebooks/01-MO-FashionMnist_initial_ind_size.ipynb.
+- notebooks/03-MO-Cifar_initial_indyvidual.ipynb
 
 ### Analiza wyników FashionMNIST
 
 ### Analiza wyników Cifar-10
 
 
-Wyniki na zbiorze testowym po wytrenowaniu na na podzbioze treningowym. 
+Wyniki na zbiorze testowym po wytrenowaniu na podzbiorze treningowym. 
 
 |                   |    TEST LOSS       | BALANCED ACCURACY |
 | ----------------- | ------------------ | ----------------- | 
