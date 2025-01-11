@@ -90,9 +90,7 @@ Przeprowadziliśmy eksperyemnty dla zbiorów danych FashionMNIST oraz CIFAR-10.
 
 Każdy eksperyment powtórzyliśmy trzykrotnie, aby uśrednić wyniki oraz zminimalizować wpływ losowości algorytmów na potencjalne wartości skrajne.
 
-[W obu przypadkach zaczeliśmy od wyznaczenia bazowej wartości metryk dla losowego osobnika który był określany w taki sam sposób jak początkowy osobnik w algorymtach optymalizacyjnych. Wartość tych metryk także została uśredniona dla kilku osobników.](https://hackmd.io/@BdTBwptLRU-buYDfi_TJnA/HyYbOCkP1x)
-
-
+W obu przypadkach zaczeliśmy od wyznaczenia bazowej wartości metryk dla losowego osobnika który był określany w taki sam sposób jak początkowy osobnik w algorymtach optymalizacyjnych. Wartość tych metryk także została uśredniona dla kilku osobników.(https://hackmd.io/@BdTBwptLRU-buYDfi_TJnA/HyYbOCkP1x)
 
 
 ### Zmierzone metryki
@@ -100,16 +98,39 @@ Każdy eksperyment powtórzyliśmy trzykrotnie, aby uśrednić wyniki oraz zmini
   - **Confusion Matrix**
 
 ## Obserwacje
-W poniższej analizie TEST LOSS oznacza wynik naszej metryki punktu [Funckja celu](#funkcja-celu). 
+W poniższej analizie TEST LOSS oznacza wynik naszej metryki z punktu [Funkcja celu](#funkcja-celu).
+
+Wyniki TEST LOSS i BALANCED ACCURACY są wynikami na zbiorze testowym po wytrenowaniu modelu przez 5 epok na podzbiorze treningowym wyznaczonym przez algorytmy optymalizacyjne.
+
+Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok treningowych, które zapewniają odpowiedni balans między szybkością trenowania a wynikiem balanced accuracy. Eksperyment został przeprowadzony dla [FashionMNIST](../notebooks/01-MO-FashionMnist_initial_ind_size.ipynb) oraz [CIFAR-10](../notebooks/03-MO-Cifar_initial_indyvidual.ipynb).
 
 ### Analiza wyników FashionMNIST
 
 ### Analiza wyników Cifar-10
 
 
-## Podsumowanie
+Wyniki na zbiorze testowym po wytrenowaniu na na podzbioze treningowym. 
+|                   |    TEST LOSS       | BALANCED ACCURACY |
+| ----------------- | ------------------ | ----------------- | 
+| Bazowe rozwiazanie| 0.410              | 0.460             | 
+| Mu+Lambda         | 0.445              | 0.498             |
+| Wspinaczkowy      | 0.447              | 0.502             | 
+
+Z tabeli wynika że optymalizatory poprawiją wyniki względem bazowego rozwiązania, ale nie różnią się między sobą.
+
+![Najlepsze dopasowanie](MO/dopasowanie.png)
+
+![Rozmiar podzbioru](MO/rozmiar.png)  
+
+
+Wykres "Najlepsze dopasowanie" pokazuje zmianę wartości funkcji loss na przestrzeni kolejnych kroków. Można zauważyć, że ze względu na selekcję ruletkową, Mu+Lambda zmienia wynik raz w jedną, raz w drugą stronę, ale oscyluje wokół tego samego poziomu. Algorytm wspinaczkowy rośnie przez pierwsze 100 kroków, a później się stabilizuje. Oba algorytmy osiągają lepsze wyniki niż rozwiązanie bazowe.
+
+W tabeli "Rozmiar podzbioru" możemy zauważyć, że rozmiar podzbiorów w obu algorytmach stabilnie rośnie. Z połączenia tych dwóch obserwacji możemy wysnuć wniosek, że algorytmy optymalizacyjne znajdują coraz lepszy podzbiór treningowy. Jednak funkcja celu, która karze za zbyt duży rozmiar, powoduje, że na wykresie "Najlepsze dopasowanie" wyniki się nie polepszają. Polepsza się jednak zdolność modelu wyuczonego na wyznaczonym przez algorytmy podzbiorze. Zgadza się to również z wynikami z tabeli z wynikami algorytmów.
+
+## Podsumowanie 
+
+Możemy zauważyć ogólny trend z delikatnymi fluktuacjami przy strategiach Mu+Lambda i Mu,Lambda. W przypadku algorytmu wspinaczkowego i strategii One Plus One widzimy poprawę na samym początku. Nie oznacza to jednak, że eksperymenty do niczego nie prowadzą. Algorytmy odnajdują coraz lepsze podzbiory treningowe, co możemy zauważyć w tabelach opisujących wyniki na ostatecznym zbiorze testowym. Ogólnie rzecz biorąc, z eksperymentów wynika, że udało nam się znaleźć lepsze podzbiory do trenowania, lecz nie jest to spektakularna różnica.
 
 ## Zespół
 Mateusz Ostaszewski 325203  
-Michał Sadowski 325221  
-
+Michał Sadowski 325221
