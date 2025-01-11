@@ -111,6 +111,46 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 
 ### Analiza wyników FashionMNIST
 
+#### Pierwsza mutacja
+
+##### Wartości metryk
+
+| Metric             | TEST LOSS | BALANCED ACCURACY |
+| ------------------  | --------- | ----------------- |
+| Bazowe rozwiązanie  | 0.778     | 0.828             |
+| Mu+Lambda           | 0.793     | 0.846             |
+| Mu, Lambda          | 0.790     | 0.845             |
+| One plus one        | 0.800     | 0.851             |
+| Wspinaczkowy        | 0.793     | 0.847             | 
+
+##### Najlepsze dopasowanie
+
+![alt text](ms/fitness_ols.png)
+
+##### Rozmiar podzbioru
+
+![alt text](ms/subset_size_old.png)
+
+#### Nowa mutacja
+
+##### Wartości metryk
+
+| Metric             | TEST LOSS | BALANCED ACCURACY |
+| ------------------  | --------- | ----------------- |
+| Bazowe rozwiązanie  | 0.778     | 0.828             |
+| Mu+Lambda           | 0.793     | 0.846             |
+| One plus one        | 0.790     | 0.845             |
+| Wspinaczkowy        | 0.801     | 0.851             |
+
+
+##### Najlepsze dopasowanie
+
+![alt text](ms/fitness_new.png)
+
+##### Rozmiar podzbioru
+
+![alt text](ms/subset_size_new.png)
+
 ### Analiza wyników Cifar-10
 
 
