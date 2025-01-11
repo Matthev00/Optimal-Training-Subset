@@ -7,6 +7,8 @@ Dla problemu klasyfikacji obrazów (np. zbiór FashionMNIST lub docelowo CIFAR-1
 
 ### Dane
 
+W projekcie korzystamy z dwóch zbiorów danych: [FashionMNIST](https://pytorch.org/vision/0.19/generated/torchvision.datasets.FashionMNIST.html) oraz [CIFAR-10](https://pytorch.org/vision/main/generated/torchvision.datasets.CIFAR10.html).
+
 ### Funkcja celu 
 $$
 J(S) = \alpha \cdot \text{Balanced Accuracy}(S) - \beta \cdot \frac{|S|}{|D|}
@@ -67,17 +69,43 @@ Decyzja o wyborze najprostszych modeli jest uzasadniona ich szybkością w treno
 
 ### Zastosowane algorytmy optymalizacyjne
 
+Przetestowaliśmy 4 rozne algorytmy optymalizacyjne:
+- strategie ewolucyjną One Plus One
+- strategie ewolucyjną Mu Plus Lambda
+- strategie ewolucyjną Mu, Lambda
+- algorytm wspinaczkowy
+
+#### Parametery strategii ewolucyjnych 
+- Krzyżowanie równomierne
+- Mutacja zamiana bitów(1, 100)
+- Selekcja ruletkowa
+
+#### Paramtery algorytmu wspinaczkowego
+- Sąsiedztwo określone jako maski różniące sie o liczbę bitów (1, 10).
+
 
 ### Przeprowadzone eksperymenty
+
+Przeprowadziliśmy eksperyemnty dla zbiorów danych FashionMNIST oraz CIFAR-10.
+
+Każdy eksperyment powtórzyliśmy trzykrotnie, aby uśrednić wyniki oraz zminimalizować wpływ losowości algorytmów na potencjalne wartości skrajne.
+
+[W obu przypadkach zaczeliśmy od wyznaczenia bazowej wartości metryk dla losowego osobnika który był określany w taki sam sposób jak początkowy osobnik w algorymtach optymalizacyjnych. Wartość tych metryk także została uśredniona dla kilku osobników.](https://hackmd.io/@BdTBwptLRU-buYDfi_TJnA/HyYbOCkP1x)
+
+
 
 
 ### Zmierzone metryki
   - **Balanced Accuracy**.  
   - **Confusion Matrix**
 
+## Obserwacje
+W poniższej analizie TEST LOSS oznacza wynik naszej metryki punktu [Funckja celu](#funkcja-celu). 
+
 ### Analiza wyników FashionMNIST
 
 ### Analiza wyników Cifar-10
+
 
 ## Podsumowanie
 
