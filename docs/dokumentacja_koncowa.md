@@ -111,9 +111,9 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 
 ### Analiza wyników FashionMNIST
 
-#### Pierwsza mutacja
+**Ekspertymenty z mutacją równą jeden**
 
-##### Wartości metryk
+**Wartości metryk**
 
 | Metric             | TEST LOSS | BALANCED ACCURACY |
 | ------------------  | --------- | ----------------- |
@@ -123,15 +123,17 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 | One plus one        | 0.800     | 0.851             |
 | Wspinaczkowy        | 0.793     | 0.847             | 
 
-##### Najlepsze dopasowanie
+![Najlepsze dopasowanie](ms/fitness_ols.png)
 
-![alt text](ms/fitness_ols.png)
+![Rozmiar podzbioru](ms/subset_size_old.png)
 
-##### Rozmiar podzbioru
+Z zebranych wyników możemy zauważyć, że udało nam się znaleść lepsze wyniki niż losowe oraz początkowe, ale nie jest to bardzo duża różnica. 
 
-![alt text](ms/subset_size_old.png)
+Wyniki pomiędzy różnymi technikami optymalizacji nie różnią się między sobą w osiągnięciu ostatecznego wyniku. 
 
-#### Nowa mutacja
+Na podstawie wykresu rozmiar podzbioru możemy zauważyć, że w przypadku `algorytmu wspinaczkowego` oraz `strategii one plus one` rozmiar pozostaje stabliny. Jednak dla Mu, lambda oraz Mu plus lambda rozmiar rośnie przez co wartość funkcji celu powoli spada.
+
+#### Eksperymenty ze zwiększoną mutacją 
 
 ##### Wartości metryk
 
@@ -142,14 +144,15 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 | One plus one        | 0.790     | 0.845             |
 | Wspinaczkowy        | 0.801     | 0.851             |
 
+![Najlepsze dopasowanie](ms/fitness_new.png)
 
-##### Najlepsze dopasowanie
+![Rozmiar podzbioru](ms/subset_size_new.png)
 
-![alt text](ms/fitness_new.png)
+W przypadku zastosowania większej mutacji oraz większej różnicy bitów między sąsiadami w przypadku algorytmu wspinaczkowego niestety nie widać polepszenia się wyników. 
 
-##### Rozmiar podzbioru
+Dalej nasze algorymty otrzymują końcową wartość lepszą niż punkty bazowe, ale nie widać poprawy wzlędem eksperymentów przeprowadzonych z mnieszją mutacją. 
 
-![alt text](ms/subset_size_new.png)
+Główną różnicę jaką możemy zauważyć jest jeszcze większe odbieganie w przypadku `strategii mu plus lambda` od początkowego zbioru i jego szybsze zwiększanie co powoduje szybszy spadek wartości funkcji celu.
 
 ### Analiza wyników Cifar-10
 
