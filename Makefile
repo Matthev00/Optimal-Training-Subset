@@ -10,6 +10,12 @@ PYTHON_INTERPRETER = python
 # COMMANDS                                                                      #
 #################################################################################
 
+## Make virtual environment
+.PHONY: make_venv
+make_venv:
+	$(PYTHON_INTERPRETER) -m venv .venv
+	source .venv/bin/activate
+
 
 ## Install Python Dependencies
 .PHONY: requirements
@@ -39,11 +45,10 @@ format:
 
 
 ## Run experiments
-.PHONY: run_FM_experiment
-run_FM_experiment:
+.PHONY: run_experiments
+run_experiments:
 	$(PYTHON_INTERPRETER) optimal_training_subset/experiments/FM_experiment.py
-
-
+	$(PYTHON_INTERPRETER) optimal_training_subset/experiments/Cifar10-experiments
 
 
 
