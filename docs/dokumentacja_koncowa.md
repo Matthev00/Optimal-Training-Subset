@@ -9,6 +9,8 @@ Dla problemu klasyfikacji obrazów (np. zbiór FashionMNIST lub docelowo CIFAR-1
 
 W projekcie korzystamy z dwóch zbiorów danych: [FashionMNIST](https://pytorch.org/vision/0.19/generated/torchvision.datasets.FashionMNIST.html) oraz [CIFAR-10](https://pytorch.org/vision/main/generated/torchvision.datasets.CIFAR10.html).
 
+Zbiory danych zostały już podzielone na część treningową i testową. W naszych eksperymentach wprowadziliśmy dodatkowy podział zbioru treningowego na część treningową i walidacyjną, aby przeprowadzić walidację podczas trenowania modelu. Część testowa z pierwotnego podziału została wykorzystana wyłącznie do ostatecznej oceny skuteczności modelu.
+
 ### Funkcja celu 
 $$
 J(S) = \alpha \cdot \text{Balanced Accuracy}(S) - \beta \cdot \frac{|S|}{|D|}
@@ -99,11 +101,6 @@ Każdy eksperyment powtórzyliśmy trzykrotnie, aby uśrednić wyniki oraz zmini
 
 W obu przypadkach zaczęliśmy od wyznaczenia bazowej wartości metryk dla losowego osobnika który był określany w taki sam sposób jak początkowy osobnik w algorymtach optymalizacyjnych. Wartość tych metryk także została uśredniona dla kilku osobników.
 
-
-### Zmierzone metryki
-  - **Balanced Accuracy**.  
-  - **Confusion Matrix**
-
 ## Obserwacje
 W poniższej analizie TEST LOSS oznacza wynik naszej metryki z punktu [Funkcja celu](#funkcja-celu).
 
@@ -137,7 +134,7 @@ Z zebranych wyników możemy zauważyć, że udało nam się znaleść lepsze wy
 
 Wyniki pomiędzy różnymi technikami optymalizacji nie różnią się znacząco między sobą w osiągnięciu ostatecznego wyniku. 
 
-Na podstawie wykresu rozmiar podzbioru możemy zauważyć, że w przypadku `algorytmu wspinaczkowego` oraz `strategii one plus one` rozmiar pozostaje stabliny. Jednak dla `Mu, lambda` oraz `Mu plus lambda` rozmiar rośnie przez co wartość funkcji celu powoli spada.
+Na podstawie wykresu: `Figure 2: Rozmiar podzbioru` możemy zauważyć, że w przypadku `algorytmu wspinaczkowego` oraz `strategii one plus one` rozmiar pozostaje stabliny. Jednak dla `Mu, lambda` oraz `Mu plus lambda` rozmiar rośnie przez co wartość funkcji celu powoli spada co możemy zaobserwować na wykresie: `Figure 1: Najlepsze dopasowanie`.
 
 **Eksperymenty ze zwiększonym sąsiedztwem oraz mutacją**
 
@@ -154,7 +151,8 @@ Na podstawie wykresu rozmiar podzbioru możemy zauważyć, że w przypadku `algo
 
 ![Rozmiar podzbioru](ms/subset_size_new.png)
 
-W przypadku zastosowania większej mutacji oraz większej różnicy bitów między sąsiadami w przypadku algorytmu wspinaczkowego niestety nie widać polepszenia się wyników. 
+W przypadku zastosowania większej mutacji w strategiach oraz większej różnicy bitów między sąsiadami w algorytmie wspinaczkowym.
+Nie widać polepszenia się wyników względem poprzednich eksperymentów. 
 
 Dalej nasze algorymty otrzymują końcową wartość lepszą niż punkty bazowe, ale nie widać poprawy wzlędem eksperymentów przeprowadzonych z mnieszją mutacją. 
 
@@ -184,7 +182,11 @@ W tabeli "Figure 6: Rozmiar podzbioru" możemy zauważyć, że rozmiar podzbior�
 
 ## Podsumowanie 
 
-Możemy zauważyć ogólny trwały trend z delikatnymi fluktuacjami przy strategiach Mu+Lambda i Mu,Lambda(spowodowane selekcją ruletkową). W przypadku algorytmu wspinaczkowego i strategii One Plus One widzimy poprawę na samym początku. Nie oznacza to jednak, że eksperymenty do niczego nie prowadzą. Algorytmy odnajdują coraz lepsze podzbiory treningowe, co możemy zauważyć w tabelach opisujących wyniki na ostatecznym zbiorze testowym. Ogólnie rzecz biorąc, z eksperymentów wynika, że udało nam się znaleźć lepsze podzbiory do trenowania, lecz nie jest to spektakularna różnica.
+Możemy zauważyć ogólny trwały trend z delikatnymi fluktuacjami przy strategiach Mu+Lambda i Mu,Lambda (spowodowane selekcją ruletkową). W przypadku algorytmu wspinaczkowego i strategii One Plus One widzimy poprawę na samym początku. Nie oznacza to jednak, że eksperymenty do niczego nie prowadzą. Algorytmy odnajdują coraz lepsze podzbiory treningowe, co możemy zauważyć w tabelach opisujących wyniki na ostatecznym zbiorze testowym. Ogólnie rzecz biorąc, z eksperymentów wynika, że udało nam się znaleźć lepsze podzbiory do trenowania, lecz nie jest to spektakularna różnica.
+
+W przypadku obu zbiorów danych wyniki są podobne. Różnice w pułapie wartości wynikają z tego, że nasz prosty model 3ChannelCNN jest na tyle małym modelem, że nie jest w stanie nauczyć się klasyfikować zbioru CIFAR-10 na wyższym poziomie. SimpleCNN radzi sobie lepiej na zbiorze FashionMNIST. Zdecydowaliśmy się jednak pozostać przy 3ChannelCNN ze względu na jego szybkość względem innych popularnych architektur.
+
+Warto zauważyć, że najprostsze metody, czyli OnePlusOne i algorytm wspinaczkowy, dały najlepsze rezultaty.
 
 ## Zespół
 Mateusz Ostaszewski 325203  
