@@ -95,7 +95,7 @@ Przetestowaliśmy 4 różne algorytmy optymalizacyjne:
 
 ### Przeprowadzone eksperymenty
 
-Przeprowadziliśmy eksperyemnty dla zbiorów danych FashionMNIST oraz CIFAR-10.
+Przeprowadziliśmy eksperymenty dla zbiorów danych FashionMNIST oraz CIFAR-10.
 
 Każdy eksperyment powtórzyliśmy trzykrotnie, aby uśrednić wyniki oraz zminimalizować wpływ losowości algorytmów na potencjalne wartości skrajne.
 
@@ -126,10 +126,19 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 | One plus one        | 0.800     | 0.851             |
 | Wspinaczkowy        | 0.793     | 0.847             | 
 
-![Najlepsze dopasowanie](ms/fitness_ols.png)
 
-![Rozmiar podzbioru](ms/subset_size_old.png)
+**Odchylenie standardowe między uruchomieniami** 
 
+| Metric                | Wspinaczkowy | Mu, Lambda | Mu+Lambda  | One plus one |
+|-----------------------|-------------:|-----------:|-----------:|-------------:|
+| BALANCED ACCURACY Std |    0.0096    |   0.0075   | 0.0037     |   0.0099     |
+| TEST LOSS Std         |    0.0097    |   0.0077   | 0.0037     |   0.0098     |
+| best fitness Std      |    0.00002   |   0.0050   |0.0024      |   0.0030     |
+| subset_size Std       |   68.147     |  54.617    |20.502      |  15.503      |
+
+
+![Najlepsze dopasowanie](ms/fitness_ols.png)   
+![Rozmiar podzbioru](ms/subset_size_old.png)   
 Z zebranych wyników możemy zauważyć, że udało nam się znaleść lepsze wyniki niż losowe oraz początkowe, ale nie jest to bardzo duża różnica. 
 
 Wyniki pomiędzy różnymi technikami optymalizacji nie różnią się znacząco między sobą w osiągnięciu ostatecznego wyniku. 
@@ -147,10 +156,18 @@ Na podstawie wykresu: `Figure 2: Rozmiar podzbioru` możemy zauważyć, że w pr
 | One plus one        | 0.790     | 0.845             |
 | Wspinaczkowy        | 0.801     | 0.851             |
 
-![Najlepsze dopasowanie](ms/fitness_new.png)
+**Odchylenie standardowe między uruchomieniami** 
 
-![Rozmiar podzbioru](ms/subset_size_new.png)
+| Metric                | Wspinaczkowy | Mu+Lambda  | One Plus One |
+|-----------------------|-------------:|-----------:|-------------:|
+| BALANCED ACCURACY Std |     0.0061   |    0.0007  |        0.0105|
+| TEST LOSS Std         |     0.0057   |   0.0002   |   0.0123     |
+| Best fitness Std      |     0.0028   |     0.0021 |      0.0013  |
+| Subset size Std       |     42.016   |    69.2122 | 178.0340     |
 
+
+![Najlepsze dopasowanie](ms/fitness_new.png)    
+![Rozmiar podzbioru](ms/subset_size_new.png)   
 W przypadku zastosowania większej mutacji w strategiach oraz większej różnicy bitów między sąsiadami w algorytmie wspinaczkowym.
 Nie widać polepszenia się wyników względem poprzednich eksperymentów. 
 
@@ -171,11 +188,18 @@ Wyniki na zbiorze testowym po wytrenowaniu na podzbiorze treningowym.
 
 Z tabeli wynika że optymalizatory poprawiją wyniki względem bazowego rozwiązania, ale nie różnią się znacząco między sobą.
 
-![Najlepsze dopasowanie](MO/dopasowanie.png)
+**Odchylenie standardowe między uruchomieniami**  
 
-![Rozmiar podzbioru](MO/rozmiar.png)  
+|                       | Wspinaczkowy | Mu+Lambda   |
+|-----------------------|--------------|-------------|
+| BALANCED ACCURACY Std | 0.004392     | 0.011467    |
+| TEST LOSS Std         | 0.004295     | 0.012070    |
+| Best fitness Std      | 0.007138     | 0.009080    |
+| Subset size Std       | 83.930527    | 48.232078   |
 
 
+![Najlepsze dopasowanie](MO/dopasowanie.png)   
+![Rozmiar podzbioru](MO/rozmiar.png)    
 Wykres "Figure 5: Najlepsze dopasowanie" pokazuje zmianę wartości funkcji loss na przestrzeni kolejnych kroków. Można zauważyć, że ze względu na selekcję ruletkową, Mu+Lambda zmienia wynik raz w jedną, raz w drugą stronę, ale oscyluje wokół tego samego poziomu. Algorytm wspinaczkowy rośnie przez pierwsze 100 kroków, a później się stabilizuje. Oba algorytmy osiągają lepsze wyniki niż rozwiązanie bazowe.
 
 W tabeli "Figure 6: Rozmiar podzbioru" możemy zauważyć, że rozmiar podzbiorów w obu algorytmach stabilnie rośnie. Z połączenia tych dwóch obserwacji możemy wysnuć wniosek, że algorytmy optymalizacyjne znajdują coraz lepszy podzbiór treningowy. Jednak funkcja celu, która karze za zbyt duży rozmiar, powoduje, że na wykresie "Najlepsze dopasowanie" wyniki się nie polepszają. Polepsza się jednak zdolność modelu wyuczonego na wyznaczonym przez algorytmy podzbiorze. Zgadza się to również z wynikami z tabeli z wynikami algorytmów.
@@ -187,6 +211,8 @@ Możemy zauważyć ogólny trwały trend z delikatnymi fluktuacjami przy strateg
 W przypadku obu zbiorów danych wyniki są podobne. Różnice w pułapie wartości wynikają z tego, że nasz prosty model 3ChannelCNN jest na tyle małym modelem, że nie jest w stanie nauczyć się klasyfikować zbioru CIFAR-10 na wyższym poziomie. SimpleCNN radzi sobie lepiej na zbiorze FashionMNIST. Zdecydowaliśmy się jednak pozostać przy 3ChannelCNN ze względu na jego szybkość względem innych popularnych architektur.
 
 Warto zauważyć, że najprostsze metody, czyli OnePlusOne i algorytm wspinaczkowy, dały najlepsze rezultaty.
+
+Analiza odchylenia standardowego w obu zbiorach dla wszystkich metryk wskazuje, że różnice między uruchomieniami są statystycznie nieistotne. Dla każdego z algorytmów wyniki są stabilne i spójne, co potwierdza ich powtarzalność. Większe odchylenie standardowe dla OnePlusOne w kontekście rozmiaru podzbioru może wynikać z faktu, algorytm silnie zależy od wylosowanego osobnika początkowego. W związku z tym różnice między uruchomieniami mogą być bardziej widoczne. Choć odchylenie standardowe rozmiaru podzbioru wydaje się relatywnie wysokie w wartościach bezwzględnych (np. 84), to w kontekście średniego rozmiaru podzbioru wynoszącego około 4000 stanowi jedynie 2,1%. Oznacza to, że zmienność ta jest niewielka i nie ma istotnego wpływu na końcowe wyniki analizy.
 
 ## Zespół
 Mateusz Ostaszewski 325203  
