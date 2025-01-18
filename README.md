@@ -15,7 +15,7 @@ The goal of the project is to identify a subset of the most representative examp
     `make requirements`
 
 ## Running experiments
-In order too replicate experiments run     
+In order to replicate experiments run     
     `make run_experiments`.  
 To inspect results run   
     `mlflow ui`.
@@ -34,9 +34,6 @@ To inspect results run
 ├── pyproject.toml   
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports          
-│   └── figures        <- Generated graphics and figures to be used in reporting
 │
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment
 │
