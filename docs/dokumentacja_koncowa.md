@@ -114,7 +114,7 @@ Na początku wyznaczyliśmy rozmiar początkowego osobnika oraz liczbę epok tre
 
 ### Analiza wyników FashionMNIST
 
-**Ekspertymenty z mutacją równą jeden**
+**Ekspertymenty z mutacją równą jeden oraz z sąsiedztwem różniącym się o jeden bit w przypadu algorytmu wspianczkowego**
 
 **Wartości metryk**
 
@@ -146,6 +146,9 @@ Wyniki pomiędzy różnymi technikami optymalizacji nie różnią się znacząco
 Na podstawie wykresu: `Figure 2: Rozmiar podzbioru` możemy zauważyć, że w przypadku `algorytmu wspinaczkowego` oraz `strategii one plus one` rozmiar pozostaje stabliny. Jednak dla `Mu, lambda` oraz `Mu plus lambda` rozmiar rośnie przez co wartość funkcji celu powoli spada co możemy zaobserwować na wykresie: `Figure 1: Najlepsze dopasowanie`.
 
 **Eksperymenty ze zwiększonym sąsiedztwem oraz mutacją**
+
+W przypadku tych eksperymentów zdecydowaliśmy się zwiększyć rozmiar mutacji z 1 do 100 dla stratregii ewolucyjnych.
+Dodatkowo zwiększyliśmy liczbę bitów którymi różnią się od siebie sąsiedzi dla algorytmu wspinaczkowego z 1 do 10, co więcej w przypadku tego algorytmu dostosowaliśmy prawdopodobieństwo aby wylosowanie zmiany bitu z 0 na 1 było tak samo prawdopodobne jak z 1 na 0.
 
 **Wartości metryk**
 
