@@ -148,7 +148,7 @@ Na podstawie wykresu: `Figure 2: Rozmiar podzbioru` możemy zauważyć, że w pr
 **Eksperymenty ze zwiększonym sąsiedztwem oraz mutacją**
 
 W przypadku tych eksperymentów zdecydowaliśmy się zwiększyć rozmiar mutacji z 1 do 100 dla stratregii ewolucyjnych.
-Dodatkowo zwiększyliśmy liczbę bitów którymi różnią się od siebie sąsiedzi dla algorytmu wspinaczkowego z 1 do 10, co więcej w przypadku tego algorytmu dostosowaliśmy prawdopodobieństwo aby wylosowanie zmiany bitu z 0 na 1 było tak samo prawdopodobne jak z 1 na 0.
+Ponadto, dla algorytmu wspinaczkowego zwiększyliśmy liczbę bitów różniących sąsiadów z 1 do 10. Dodatkowo dostosowaliśmy prawdopodobieństwo zmiany bitu, aby przejścia z 0 na 1 oraz z 1 na 0 były równie prawdopodobne, nawet w sytuacji znacznej dysproporcji między liczbą zer i jedynek w wektorze reprezentującym osobnika
 
 **Wartości metryk**
 
@@ -216,6 +216,9 @@ W przypadku obu zbiorów danych wyniki są podobne. Różnice w pułapie wartoś
 Warto zauważyć, że najprostsze metody, czyli OnePlusOne i algorytm wspinaczkowy, dały najlepsze rezultaty.
 
 Analiza odchylenia standardowego w obu zbiorach dla wszystkich metryk wskazuje, że różnice między uruchomieniami są statystycznie nieistotne. Dla każdego z algorytmów wyniki są stabilne i spójne, co potwierdza ich powtarzalność. Większe odchylenie standardowe dla OnePlusOne w kontekście rozmiaru podzbioru może wynikać z faktu, algorytm silnie zależy od wylosowanego osobnika początkowego. W związku z tym różnice między uruchomieniami mogą być bardziej widoczne. Choć odchylenie standardowe rozmiaru podzbioru wydaje się relatywnie wysokie w wartościach bezwzględnych (np. 84), to w kontekście średniego rozmiaru podzbioru wynoszącego około 4000 stanowi jedynie 2,1%. Oznacza to, że zmienność ta jest niewielka i nie ma istotnego wpływu na końcowe wyniki analizy.
+
+Dostosowanie prawdopodobieństwa zmiany bitu przyniosło niewielką, ale zauważalną poprawę w wynikach. Główna wartość tej poprawy wynika z faktu, że udało się znaleźć lepsze podzbiory treningowe, jednocześnie utrzymując rozmiar podzbioru na zbliżonym poziomie, co wcześniej stanowiło problem.
+W przyszłych badaniach należałoby rozważyć dalsze rozwijanie tego podejścia i eksperymentowanie z różnymi strategiami dostosowywania prawdopodobieństwa w celu jeszcze lepszego balansu pomiędzy rozmiarem podzbioru a osiąganymi wynikami.
 
 ## Zespół
 Mateusz Ostaszewski 325203  
